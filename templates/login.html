@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .login-container:hover {
+            transform: scale(1.02);
+        }
+
+        .logo img {
+            width: 200px;
+            border-radius: 10%;
+            margin-bottom: 20px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-input {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 18px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .form-input:focus {
+            border-color: #41d8db;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-input {
+            padding-right: 40px;
+        }
+
+        .show-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .show-password:hover {
+            color: #41d8db;
+        }
+
+        .form-button {
+            padding: 15px;
+            background-color: #41d8db;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .form-button:hover {
+            background-color: #41d8db;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="animalapp.jpeg" alt="Logo">
+
+        </div>
+        <form class="login-form" action="#" method="post">
+            <input class="form-input" type="text" name="userId" placeholder="User ID" required>
+            <div class="password-container">
+                <input class="form-input password-input" type="password" name="password" placeholder="Password" required>
+                <span class="show-password" onclick="togglePasswordVisibility()">
+                    👁️
+                </span>
+            </div>
+            <button class="form-button" type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.querySelector('.password-input');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>
