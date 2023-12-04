@@ -3,5 +3,6 @@ from AnimalRes import views
 
 urlpatterns = [
     path('', views.home),
+    path('registerAnimal', views.registerAnimal),
 
 ]
