@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Register New Animal</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <style>
+    body {
+      padding-top: 20px;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #007bff;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      border: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container my-4">
+    <h2 class="mb-4">REGISTER NEW ANIMAL</h2>
+
+    <form action="#" method="post">
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="sNo">S.No:</label>
+          <input type="text" class="form-control" id="sNo" name="sNo" required>
+        </div>
+        
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="date">Date:</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+          </div>
+        <div class="form-group col-md-6">
+          <label for="time">Time:</label>
+          <input type="time" class="form-control" id="time" name="time" required>
+        </div>
+        
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="location">Location:</label>
+            <input type="text" class="form-control" id="location" name="location" required>
+          </div>
+          <div class="form-group col-md-6">
+        <label for="landmark">Landmark:</label>
+        <input type="text" class="form-control" id="landmark" name="landmark" placeholder="User can enter area or landmark" required>
+        </div>
+    </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="latitude">Latitude:</label>
+          <input type="text" class="form-control" id="latitude" name="latitude" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="longitude">Longitude:</label>
+          <input type="text" class="form-control" id="longitude" name="longitude" required>
+        </div>
+      </div>
+
+      
+      
+
+      <div class="form-group">
+        <label for="uploadPhoto">Upload Photo:</label>
+        <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;">
+        <input type="button" value="Open Camera" onclick="openCamera()" style="cursor: pointer;">
+        <br>
+        <img id="previewImage" src="#" alt="Preview" style="display: none; max-width: 300px; margin-top: 10px;">
+        <br>
+        <input type="button" value="Confirm Upload" onclick="confirmUpload()" style="display: none; cursor: pointer;">
+        <br>
+        <input type="submit" value="Upload" style="display: none;">
+      </div>
+
+      <div class="form-group">
+        <label for="animalType">Animal Type:</label>
+        <input type="text" class="form-control" id="animalType" name="animalType" required>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status of Animal when rescued:</label>
+        <select class="form-control" id="status" name="status" required>
+            <option value="Normal">Normal</option>
+            <option value="Critical">Critical</option>
+            <option value="Injured">Injured</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">SAVE</button>
+      <button type="button" class="btn btn-secondary" onclick="cancel()">CANCEL</button>
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <script>
+    function cancel() {
+      // Add any cancellation logic here
+      alert("Registration Cancelled");
+    }
+  </script>
+  <script>
+    function openCamera() {
+        // Check if the browser supports the getUserMedia API
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    var video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+
+                    // Capture an image from the video stream
+                    video.onloadeddata = function () {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                        // Convert the canvas content to a data URL representing a PNG image
+                        var imageDataUrl = canvas.toDataURL('image/png');
+
+                        // Display the captured image preview
+                        var previewImage = document.getElementById('previewImage');
+                        previewImage.src = imageDataUrl;
+                        previewImage.style.display = 'block';
+
+                        // Set the data URL as the value of the file input
+                        var imageInput = document.getElementById('imageInput');
+                        imageInput.value = imageDataUrl;
+                    };
+
+                    document.getElementById('imageInput').style.display = 'block';
+                })
+                .catch(function (error) {
+                    console.error('Error accessing camera:', error);
+                });
+        } else {
+            alert('Sorry, your browser does not support the camera functionality.');
+        }
+        document.getElementById('confirmUploadButton').style.display = 'block';
+    }
+    function confirmUpload() {
+        var confirmed = confirm('Are you sure you want to upload this image?');
+        if (confirmed) {
+            // User confirmed, submit the form
+            document.getElementById('myForm').submit();
+        } else {
+            // User canceled, hide the confirmation button
+            document.getElementById('confirmUploadButton').style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
