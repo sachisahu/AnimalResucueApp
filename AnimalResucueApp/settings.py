@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-7jcly(x*f36ftqfrk%+ptp!my*es@dt5c5v*dwl3cp*!=bbm+d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AnimalRes'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,11 +81,11 @@ WSGI_APPLICATION = 'AnimalResucueApp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'animalrescuedb',
-        'HOST':'127.0.0.1',
-        'PORT':'3306',
-        'USER':'root',
-        'PASSWORD':'sachi'
+        'NAME': 'AnimalRescueApp',
+        'HOST':'db-mysql-blr1-74221-do-user-14553240-0.b.db.ondigitalocean.com',
+        'PORT':'25060',
+        'USER':'sahu',
+        'PASSWORD':'AVNS_P84CetQ7qPBorl1-gHj'
     }
 }
 
