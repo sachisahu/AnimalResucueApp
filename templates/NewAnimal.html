@@ -90,6 +90,7 @@
             <video id="videoCam" playsinline autoplay></video>
             <button id="openCamera" type="button">Open Cam</button>
             <button id="captureButton" type="button">Capture Image</button>
+            <button id="flipCamera" type="button">Flip Camera</button>
         </div>
       
       
@@ -136,8 +137,13 @@
       const previewImageCanvas = document.getElementById("previewImageCanvas");
       const captureButton = document.getElementById("captureButton");
       const openCam = document.getElementById("openCamera");
+      const flipCameraButton = document.getElementById("flipCamera");
+
+      let stream; // Store the stream globally
+      let currentCamera = 'environment'; // 'environment' represents the back camera
 
       const constraint = {
+          facingMode: currentCamera,
           audio: false,
           video: {
               width: 420,height:240
@@ -166,11 +172,31 @@
 
       captureButton.addEventListener("click",function(){
           context.drawImage(videoCam,0,0,420,240)
+          if (stream && stream.getTracks) {
+              stream.getTracks().forEach(track => track.stop());
+          }
       });
 
       openCam.addEventListener("click",function(){
           init();
       })
+
+      flipCameraButton.addEventListener("click", function () {
+          // Check if stream is defined before accessing its tracks
+          if (stream && stream.getTracks) {
+              // Stop the current stream
+              stream.getTracks().forEach(track => track.stop());
+          }
+
+          // Toggle between front and back cameras
+          currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+
+          // Update constraints with the new facingMode
+          constraint.video.facingMode = currentCamera;
+
+          // Start the new stream
+          init();
+      });
 
 
 
