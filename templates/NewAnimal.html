@@ -123,15 +123,18 @@
       </div>
 
       <button type="submit" class="btn btn-primary">SAVE</button>
-      <button type="button" class="btn btn-secondary" onclick="cancel()">CANCEL</button>
+      <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
     </form>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 
   <script>
+
 
       const videoCam = document.getElementById("videoCam");
       const previewImageCanvas = document.getElementById("previewImageCanvas");
@@ -204,9 +207,22 @@
 
 
 
-    function cancel() {
-      // Add any cancellation logic here
-      alert("Registration Cancelled");
+    function redirectToHomePage() {
+        confirmetion()
+    }
+    function confirmetion(){
+        swal({
+            title: "Are you sure?",
+            text: "Want to cancel Registration",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    window.location.href = '/'
+                }
+            });
     }
     function openCamera() {
         // Check if the browser supports the getUserMedia API
