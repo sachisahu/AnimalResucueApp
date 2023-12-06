@@ -3,10 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
+<style>
+    .logoutButton {
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 30px;
+        /* Adjust the margin as needed */
+    }
+
+    /* Style for the Logout button */
+
+</style>
 <body>
-hi this is html page
+<div class="container mt-5 text-center align-middle">
+    <div class="row">
+        <div class="col-12">
+            <a href="../dashboard"><img
+                    src="https://animalrescuesresources.blr1.digitaloceanspaces.com/icons/logo.jpg"
+                    class='m-2 img-fluid' alt="AssistEd"></a>
+
+        </div>
+{#        <div class="tab-container">#}
+{#            <a class="btnn btn-primary rounded-pill" href="/user/userprofile">Dashboard</a>#}
+{#            <a class="btnn btn-primary rounded-pill" href="../learningpaths">Learning Plan</a>#}
+{#            <a class="btnn btn-primary rounded-pill" href="/scheduleClass">Schedule Class</a>#}
+{#            <a class="btnn btn-primary rounded-pill" href="/joinbatch/batch" id="joinBatchButton">Join Batch</a>#}
+{#        </div>#}
+        <div style="margin-bottom: 20px;">
+
+        </div>
+
+
+    </div>
+    <div class="logoutButton">
+        {% if request.user.is_authenticated %}
+            <form action='/logout' method='POST'>
+                {% csrf_token %}
+                <button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">Logout</button>
+            </form>
+            {% else %}
+            <a href="/login"><button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">login</button></a>
+
+        {% endif %}
+
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <div class="row">
+            <div class="col-sm">
+                <button type='submit' onclick="location.href='registerAnimal'" style='background:transparent; border:0px'>
+                    <div class="p-5 m-5"
+                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff;  height:150px; width:300px; background:#6495ED; border-radius:10px">
+                        <h3>Register</h3>
+{#                        <h5>New Animal</h5>#}
+                    </div>
+                </button>
+            </div>
+            <div class="col-sm">
+                <button type='submit' onclick="location.href='sat'" style='background:transparent; border:0px'>
+                    <div class="p-5 m-5"
+                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:300px; background:#6082B6; border-radius:10px">
+                        <h3>Release</h3>
+{#                        <h5>Animal</h5>#}
+                    </div>
+
+                </button>
+            </div>
+
+            <div class="col-sm">
+                <button type='submit' onclick="location.href='sat'" style='background:transparent; border:0px'>
+                    <div class="p-5 m-5"
+                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:300px; background:#6F8FAF ; border-radius:10px">
+                        <h3>Report</h3>
+                    </div>
+
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+
+<div style="margin-bottom: 20px;"> </div>
+{#<footer class="footer fixed-bottom mt-5 py-12 bg-light" style="margin-top: 20px;">#}
+{#    <div class="container">#}
+{#        {% comment %} <p class='text-center'>&copy; AssistEd</p> {% endcomment %}#}
+{#        <div class='row'>#}
+{#            <div class='col text-center'>#}
+{#                <a style='color:grey' target='_blank' href='#'>Privacy Policy</a>#}
+{#            </div>#}
+{#            <div class='col text-center'>#}
+{#                <a style='color:grey' target='_blank' href='/terms'>Terms of Use</a>#}
+{#            </div>#}
+{#            <div class='col text-center'>#}
+{#                <a style='color:grey' target='_blank' href='#'>Payment & Refund Policy</a>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#        <div class="row" style="margin-top: 10px;"  >#}
+{#            <div class="col text-center" style="color: grey; font-style: italic;" >This application is best viewed on Desktop/Laptop.</div>#}
+{#        </div>#}
+{#    </div>#}
+{#</footer>#}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b4gt3Kl9r5fQphWu3k/pjC9ur3ktQOp6zfrY9WlU5xKRKMtCru8+3RFApi7hjIbb" crossorigin="anonymous"></script>
 
 
 

@@ -93,18 +93,26 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <img src="animal.jpeg" alt="Logo">
+            <img src="https://animalrescuesresources.blr1.digitaloceanspaces.com/icons/logo.jpg" alt="Logo">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
         </div>
-        <form class="login-form" action="#" method="post">
+        <form class="login-form" method="post">
+            {% csrf_token %}
             <input class="form-input" type="text" name="userId" placeholder="User ID" required>
             <div class="password-container">
-                <input class="form-input password-input" type="password" name="password" placeholder="Password" required>
+                <input class="form-input password-input" type="password" name="userpassword" placeholder="Password" required>
                 <span class="show-password" onclick="togglePasswordVisibility()">
                     👁️
                 </span>
             </div>
-            <button class="form-button" type="submit">Login</button>
+            <button class="form-button" name="loginBtn" type="submit">Login</button>
         </form>
     </div>
 
