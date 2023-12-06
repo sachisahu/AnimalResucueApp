@@ -134,3 +134,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AWS_ACCESS_KEY_ID = 'DO00CEXHQL2U2G4B4X3L'
+AWS_SECRET_ACCESS_KEY = 'KYr7Dd0iYZcm+L/fPYTPB5AJh7TgdnIOlFBaRBxSzTU'
+AWS_STORAGE_BUCKET_NAME = 'animalrescuesresources'
+AWS_S3_ENDPOINT_URL = 'https://blr1.digitaloceanspaces.com'
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",
+    "ACL": "public-read"
+}
+AWS_LOCATION = 'resources'
+
+
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
