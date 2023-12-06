@@ -86,6 +86,11 @@
         </div>
       </div>
 
+        <div>
+            <video id="videoCam" playsinline autoplay></video>
+            <button id="openCamera" type="button">Open Cam</button>
+            <button id="captureButton" type="button">Capture Image</button>
+        </div>
       
       
 
@@ -94,7 +99,8 @@
         <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;">
         <input type="button" value="Open Camera" onclick="openCamera()" style="cursor: pointer;">
         <br>
-        <img id="previewImage" src="#" alt="Preview" style="display: none; max-width: 300px; margin-top: 10px;">
+          <img id="previewImage" src="#" alt="Preview" style="display: none; max-width: 300px; margin-top: 10px;">
+          <canvas id="previewImageCanvas" width="420" height="240"></canvas>
         <br>
         <input type="button" value="Confirm Upload" onclick="confirmUpload()" style="display: none; cursor: pointer;">
         <br>
@@ -125,12 +131,57 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
   <script>
+
+      const videoCam = document.getElementById("videoCam");
+      const previewImageCanvas = document.getElementById("previewImageCanvas");
+      const captureButton = document.getElementById("captureButton");
+      const openCam = document.getElementById("openCamera");
+
+      const constraint = {
+          audio: false,
+          video: {
+              width: 420,height:240
+          }
+
+      }
+
+      async function init(){
+          try{
+              const stream = await navigator.mediaDevices.getUserMedia(constraint);
+              handleSuccess(stream);
+          }
+          catch (e) {
+              alert(e.toString())
+
+          }
+      }
+
+      function handleSuccess(stream){
+          window.stream = stream;
+          videoCam.srcObject = stream;
+      }
+
+      //init();
+      var context = previewImageCanvas.getContext('2d');
+
+      captureButton.addEventListener("click",function(){
+          context.drawImage(videoCam,0,0,420,240)
+      });
+
+      openCam.addEventListener("click",function(){
+          init();
+      })
+
+
+
+
+
+
+
     function cancel() {
       // Add any cancellation logic here
       alert("Registration Cancelled");
     }
-  </script>
-  <script>
     function openCamera() {
         // Check if the browser supports the getUserMedia API
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
