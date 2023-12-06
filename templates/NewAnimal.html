@@ -49,11 +49,11 @@
     }
 
     .modal-contents {
-        height: 300px;
-        width: 500px;
+        height: fit-content;
+        width: fit-content;
         background-color: white;
         text-align: center;
-        padding: 20px;
+        padding: 30px;
         position: fixed;
         border-radius: 4px;
     }
@@ -67,10 +67,14 @@
     <div class="modal-contents">
 
         <div id="cameradiv">
-            <video id="videoCam" playsinline autoplay></video>
-            <button id="openCamera" type="button" hidden>Open Cam</button>
-            <button id="captureButton" type="button">Capture Image</button>
-            <button id="flipCamera" type="button">Flip Camera</button>
+            <div class="row">
+                <video id="videoCam" playsinline autoplay></video>
+            </div>
+            <div class="row">
+                <button id="openCamera" type="button" hidden>Open Cam</button>
+                <button id="captureButton" type="button">Capture Image</button>
+                <button id="flipCamera" type="button">Flip Camera</button>
+            </div>
         </div>
     </div>
 </div>
@@ -161,6 +165,7 @@
 
       const constraint = {
           facingMode: currentCamera,
+          focus:true,
           audio: false,
           video: {
               width: 420,height:240
