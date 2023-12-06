@@ -49,8 +49,8 @@
     }
 
     .modal-contents {
-        height: fit-content;
-        width: fit-content;
+        height: 95%;
+        width: 95%;
         background-color: white;
         text-align: center;
         padding: 30px;
@@ -67,12 +67,12 @@
     <div class="modal-contents">
         <div id="cameradiv">
             <div class="row">
-                <video id="videoCam" playsinline autoplay></video>
+                <video id="videoCam" playsinline autoplay width="100%" height="100%" style="z-index: 1"></video>
             </div>
             <div class="row">
                 <button id="openCamera" type="button" hidden>Open Cam</button>
-                <button id="captureButton" type="button">Capture Image</button>
-                <button id="flipCamera" type="button">Flip Camera</button>
+                <button id="captureButton" type="button" style="z-index: 1000">Capture Image</button>
+                <button id="flipCamera" type="button" style="z-index: 1000">Flip Camera</button>
             </div>
         </div>
     </div>
@@ -112,7 +112,7 @@
 
 
         <div class="form-group">
-            <canvas id="previewImageCanvas" style="width: max-content; height:max-content"></canvas>
+            <canvas id="previewImageCanvas" style="width: max-content; height:max-content;padding: 10px"></canvas>
             <input type="file" id="fileInputImage" name="fileInputImage" hidden>
       </div>
         <button id="openCameraBtn" type="button">Open Camera</button>
@@ -167,8 +167,8 @@
           focus:true,
           audio: false,
           video: {
-              width: { ideal: 4096 },
-              height: { ideal: 2160 }
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
           }
 
       }
