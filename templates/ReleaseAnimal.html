@@ -107,12 +107,12 @@
     <form method="post" id="formRelease">
         {% csrf_token %}
         <div class="form-group row">
-            <label for="latitude">Sl NO:</label>
+            <label for="latitude">Fetch bt SL NO:</label>
             <div class="col">
-                <input type="text" class="form-control" id="reqslno" name="reqslno"  value="2" required >
+                <input type="text" class="form-control" id="reqslno" name="reqslno" required >
             </div>
             <div class="col">
-                <button type="button" class="btn btn-primary" onclick="fetchData()">Show & Edit</button>
+                <button type="button" class="btn btn-primary" onclick="fetchData()">Fetch</button>
             </div>
         </div>
     </form>
@@ -141,7 +141,7 @@
             </table>
         </div>
 
-    </div>
+
 
 
 
@@ -184,7 +184,7 @@
 
 
 
-        <div class="form-group">
+        <div class="form-group" style="height: auto; width: auto;padding: 5px; overflow: auto">
             <canvas id="previewImageCanvas" style="width: max-content; height:max-content;padding: 10px"></canvas>
             <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
         </div>
@@ -200,9 +200,12 @@
             </select>
         </div>
 
-        <button type="submit" name="saveButton" class="btn btn-primary">SAVE</button>
-        <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+        <div class="form-group mt-2">
+            <button type="submit" name="saveButton" class="btn btn-primary">SAVE</button>
+            <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+        </div>
     </form>
+</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
@@ -231,7 +234,7 @@
 
 
     const constraint = {
-        facingMode: currentCamera,
+        facingMode: 'environment',
         focus:true,
         audio: false,
         video: {
