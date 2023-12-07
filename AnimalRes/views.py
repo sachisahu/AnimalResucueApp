@@ -60,7 +60,7 @@ def releaseAnimal(request):
 
             picURLurl = uploadResourcesToDigitalOcean('releaseAnimal', image)
 
-            updateRelaesedAnimal = AnimalRescued.objects.get(id = slno)
+            updateRelaesedAnimal = AnimalRescued.objects.get(id=slno)
             updateRelaesedAnimal.release_date = datetime.datetime.today()
             updateRelaesedAnimal.release_time = datetime.datetime.now()
             updateRelaesedAnimal.release_latitude = latitude
@@ -72,8 +72,6 @@ def releaseAnimal(request):
             updateRelaesedAnimal.save()
 
             return redirect('/releaseAnimal')
-
-
 
         if 'getAnimalDetails' in request.POST:
             slno = request.POST.get('reqslno')
@@ -97,3 +95,13 @@ def releaseAnimal(request):
                 return JsonResponse({'message': "Invalid Slno", 'status': 404})
 
     return render(request, "ReleaseAnimal.html")
+
+
+@login_required(login_url='/login')
+def report(request):
+    allResecues = AnimalRescued.objects.all()
+    context = {
+        "allResecues":allResecues
+
+    }
+    return render(request, 'report.html',context)
