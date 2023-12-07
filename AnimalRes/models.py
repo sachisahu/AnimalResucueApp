@@ -25,5 +25,6 @@ class AnimalRescued(models.Model):
     release_latitude = models.CharField(max_length=100, null=True)
     release_longitude = models.CharField(max_length=100, null=True)
     release_landmark = models.CharField(max_length=100, null=True)
-    release_animalPhoto = models.CharField(max_length=100, null=True)
+    release_animalPhoto = models.CharField(max_length=1000, null=True)
     release_status = models.CharField(max_length=100, null=True)
+    distance_variance = models.CharField(max_length=100, null=True)
