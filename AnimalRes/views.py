@@ -25,6 +25,12 @@ def registerAnimal(request):
             image = request.FILES['fileInputImage']
             animal = request.POST.get('animalType')
             status = request.POST.get('status')
+            otherInput = request.POST.get('otherInput')
+
+
+            if animal == 'others':
+                animal = otherInput
+
 
             print(image)
 
@@ -38,7 +44,7 @@ def registerAnimal(request):
                 pickup_longitude=longitude,
                 pickup_landmark=landmark,
                 pickup_animalPhoto=picURLurl,
-                animal=Animal.objects.get(id=animal),
+                animal=animal,
                 pickup_status=status
             )
             animalRes.save()
@@ -81,7 +87,7 @@ def releaseAnimal(request):
                     print("hittingrelese" + str(animalDetails))
                     animalData = {
                         'id': animalDetails.id,
-                        'type': animalDetails.animal.animal,
+                        'type': animalDetails.animal,
                         'photo_url': animalDetails.pickup_animalPhoto,
                         'landmark': animalDetails.pickup_landmark,
                         'longitude': animalDetails.pickup_longitude,

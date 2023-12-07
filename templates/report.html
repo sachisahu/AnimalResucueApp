@@ -26,19 +26,22 @@
 </div>
 
 
-<div class="container mt-5 text-center align-middle">
+<div class="container mt-5 text-center align-middle" style="width: 100%; overflow: auto">
 
-    <h4 class="text-center">Pickup Animal Details</h4>
+    <h4 class="text-center">Report</h4>
+        <hr>
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">Slno</th>
+            <th scope="col">S.no</th>
             <th scope="col">Date of Capture</th>
             <th scope="col">Date Of Release</th>
-            <th scope="col">Animal Type</th>
-            <th scope="col">Status(Captured)</th>
-            <th scope="col">Status(Released)</th>
+            <th scope="col">Animal</th>
+            <th scope="col">Status While Capturing</th>
+            <th scope="col">Status before Releasing</th>
             <th scope="col">Variance(in Meter)</th>
+            <th scope="col">Image While Capturing</th>
+            <th scope="col">Image While Releasing</th>
         </tr>
         </thead>
         <tbody>
@@ -46,11 +49,39 @@
             <tr class="bg-info text-white">
                 <td>{{ rep.id }}</td>
                 <td>{{ rep.pickup_date }}</td>
-                <td>{{ rep.release_date }}</td>
+                <td>
+                    {% if rep.release_date  %}
+                        {{ rep.release_date }}
+                    {% else %}
+                        Not Yet Released
+                    {% endif %}
+                </td>
                 <td>{{ rep.animal.animal }}</td>
                 <td>{{ rep.pickup_status }}</td>
-                <td>{{ rep.release_status }}</td>
-                <td>{{ rep.distance_variance }}</td>
+                <td>
+                    {% if rep.release_status  %}
+                        {{ rep.release_status }}
+                    {% else %}
+                        Not Yet Released
+                    {% endif %}
+                </td>
+                <td>
+                    {% if rep.distance_variance  %}
+                        {{ rep.distance_variance }}
+                    {% else %}
+                        Not Yet Released
+                    {% endif %}
+                </td>
+                <td><a href="{{ rep.pickup_animalPhoto }}" target="_blank"><img src="{{ rep.pickup_animalPhoto }}" width="60" height="110" alt="image"></a></td>
+                <td>
+                    {% if rep.release_animalPhoto  %}
+                        <a href="{{ rep.release_animalPhoto }}" target="_blank"><img src="{{ rep.pickup_animalPhoto }}" width="60" height="110" alt="image"></a>
+                    {% else %}
+                        Not Yet Released
+                    {% endif %}
+
+                </td>
+
             </tr>
 
         {% endfor %}

@@ -78,7 +78,7 @@
                 <div class="col">
 {#                    <button id="captureButton" type="button" >Capture Image</button>#}
                     <button type="button" class="btn btn-dark btn-lg" id="captureButton">
-                        <i class="fa fa-camera"></i>
+                        <i class="fa fa-camera" style="z-index: 1"></i>
                     </button>
                 </div>
                 <div class="col">
@@ -112,13 +112,14 @@
 
 
       <div class="form-row ">
+          <label class="form-group">Step: 1 Capture Location</label>
         <div class="form-group col-md-5">
-          <label for="latitude">Latitude:</label>
-          <input type="text" class="form-control" id="latitude" name="latitude" required >
+          <label for="latitude" hidden>Latitude:</label>
+          <input type="text" class="form-control" id="latitude" name="latitude" required hidden>
         </div>
         <div class="form-group col-md-5">
-          <label for="longitude">Longitude:</label>
-          <input type="text" class="form-control" id="longitude" name="longitude" required >
+          <label for="longitude" hidden>Longitude:</label>
+          <input type="text" class="form-control" id="longitude" name="longitude" required hidden>
         </div>
           <div class="form-group col-md-2 mt-2">
               <label></label>
@@ -127,7 +128,7 @@
       </div>
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label for="landmark">Landmark:</label>
+                <label for="landmark">Step 2: Enter Landmark</label>
                 <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
             </div>
         </div>
@@ -135,26 +136,37 @@
 
 
 
-
-
         <div class="form-group" style="height: auto; width: auto;padding: 5px; overflow: auto">
-            <canvas id="previewImageCanvas" style="width: fit-content; height:fit-content;padding: 10px"></canvas>
+            <label class="form-group">Step 3: Open Camera</label><br>
+            <canvas id="previewImageCanvas" style="width: fit-content; height:fit-content;padding: 10px;border: 1px solid rgb(128,128,128); border-radius: 10px"></canvas>
             <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
-      </div>
-        <button id="openCameraBtn" type="button" class="btn btn-secondary">Open Camera</button>
+        </div>
 
 
         <div class="form-group">
-        <label for="animalType">Animal Type:</label>
-        <select type="text" class="form-control" id="animalType" name="animalType" required>
+
+            <button id="openCameraBtn" type="button" class="btn btn-secondary mt-2">Open Camera</button>
+        </div>
+
+
+
+
+        <div class="form-group mt-2">
+        <label for="animalType">Step 4:Animal Type</label>
+        <select type="text" class="form-control" id="animalType" name="animalType" onchange="othersTextBox()" required>
             {% for animal in animals %}
-                <option value="{{ animal.id }}">{{ animal.animal }}</option>
+                <option value="{{ animal.animal }}">{{ animal.animal }}</option>
             {% endfor %}
+            <option value="others">Others</option>
         </select>
       </div>
+        <div class="form-group mt-2" id="othersDiv"  style="display: none">
+            <label for="animalType">Enter Animal type in Box</label>
+           <input type="text" class="form-control" name="otherInput" id="otherInput">
+        </div>
 
       <div class="form-group">
-        <label for="status">Status of Animal when rescued:</label>
+        <label for="status">Step 5:Status of Animal when rescued:</label>
         <select class="form-control" id="status" name="status" required>
             <option value="Normal">Normal</option>
             <option value="Critical">Critical</option>
@@ -164,7 +176,7 @@
 
         <div class="form-group mt-2">
 
-            <button type="submit" name="saveButton" class="btn btn-primary">SAVE</button>
+            <button type="submit" name="saveButton" class="btn btn-primary" onclick="validateForm()">SAVE</button>
             <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
 
         </div>
@@ -324,7 +336,7 @@
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(showPosition, showError);
           } else {
-              alert("Geolocation is not supported by this browser.");
+              swal("Geolocation is not supported by this browser.");
           }
       }
 
@@ -337,6 +349,7 @@
 
           latitudeElement.value = latitude;
           longitudeElement.value = longitude;
+          swal("Location Capture Successful");
       }
 
       function showError(error) {
@@ -389,6 +402,30 @@
 
     }
 
+    function validateForm(){
+        const latE = document.getElementById("latitude");
+        const longE = document.getElementById("longitude");
+        const file = document.getElementById('fileInputImage');
+
+        if(file.files.length<=0){
+            swal("Please Capture Picture")
+        }
+
+        if(latE.value.length <=0 || longE.value.length <= 0){
+            swal("Please Capture Location")
+        }
+    }
+
+    function othersTextBox(){
+        const selectAnimal = document.getElementById('animalType');
+        const othersDiv = document.getElementById('othersDiv');
+
+        if(selectAnimal.value === 'others'){
+            othersDiv.style.display = 'block';
+        }else {
+            othersDiv.style.display = 'none';
+        }
+    }
 
 
 

@@ -18,7 +18,7 @@ class AnimalRescued(models.Model):
     pickup_longitude = models.CharField(max_length=100, null=True)
     pickup_landmark = models.CharField(max_length=100, null=True)
     pickup_animalPhoto = models.CharField(max_length=1000, null=True)
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
+    animal = models.CharField(max_length=100, null=True)
     pickup_status = models.CharField(max_length=100)
     release_date = models.DateField(null=True)
     release_time = models.TimeField(null=True)
