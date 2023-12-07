@@ -254,6 +254,7 @@
                 isCameraOn = false;
             } else {
                 // If the camera is off, turn it on
+                constraint.video.facingMode = 'environment';
                 stream = await navigator.mediaDevices.getUserMedia(constraint);
                 handleSuccess(stream);
                 isCameraOn = true;
@@ -328,7 +329,7 @@
         currentCamera = currentCamera === 'user' ? 'environment' : 'environment';
 
         // Update constraints with the new facingMode
-        constraint.video.facingMode = currentCamera;
+        constraint.video.facingMode = 'environment';
 
         // Start the new stream
         init();
@@ -385,7 +386,7 @@
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
-            alert("Geolocation is not supported by this browser.");
+            swal("Geolocation is not supported by this browser.");
         }
     }
 

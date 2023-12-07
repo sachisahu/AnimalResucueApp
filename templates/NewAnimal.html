@@ -210,6 +210,7 @@
                   isCameraOn = false;
               } else {
                   // If the camera is off, turn it on
+                  constraint.video.facingMode = 'environment';
                   stream = await navigator.mediaDevices.getUserMedia(constraint);
                   handleSuccess(stream);
                   isCameraOn = true;
@@ -281,10 +282,9 @@
           }
 
           // Toggle between front and back cameras
-          currentCamera = currentCamera === 'user' ? 'environment' : 'environment';
 
           // Update constraints with the new facingMode
-          constraint.video.facingMode = currentCamera;
+          constraint.video.facingMode = 'environment';
 
           // Start the new stream
           init();
