@@ -5,5 +5,6 @@ urlpatterns = [
     path('', views.home),
     path('registerAnimal', views.registerAnimal),
     path('releaseAnimal', views.releaseAnimal),
+    path('report', views.report),
 
 ]
