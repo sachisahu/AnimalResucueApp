@@ -116,7 +116,7 @@
           <label for="longitude">Longitude:</label>
           <input type="text" class="form-control" id="longitude" name="longitude" required >
         </div>
-          <div class="form-group col-md-2">
+          <div class="form-group col-md-2 mt-2">
               <label></label>
               <button type="button" class="btn btn-primary" onclick="getLocation()">Capture Location</button>
           </div>
@@ -133,7 +133,7 @@
 
 
 
-        <div class="form-group">
+        <div class="form-group" style="height: auto; width: auto;padding: 5px; overflow: auto">
             <canvas id="previewImageCanvas" style="width: fit-content; height:fit-content;padding: 10px"></canvas>
             <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
       </div>
@@ -158,8 +158,13 @@
         </select>
       </div>
 
-      <button type="submit" name="saveButton" class="btn btn-primary">SAVE</button>
-      <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+        <div class="form-group mt-2">
+
+            <button type="submit" name="saveButton" class="btn btn-primary">SAVE</button>
+            <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+
+        </div>
+
     </form>
   </div>
 
@@ -185,7 +190,7 @@
 
 
       const constraint = {
-          facingMode: currentCamera,
+          facingMode: 'environment',
           focus:true,
           audio: false,
           video: {
