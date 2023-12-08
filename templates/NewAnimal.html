@@ -62,6 +62,7 @@
 
 
 
+
   </style>
 </head>
 <body>
@@ -112,7 +113,7 @@
 
 
       <div class="form-row ">
-          <label class="form-group">Step: 1 Capture Location</label>
+          <label class="form-group" hidden>Step: 1 Capture Location</label>
         <div class="form-group col-md-5">
           <label for="latitude" hidden>Latitude:</label>
           <input type="text" class="form-control" id="latitude" name="latitude" required hidden>
@@ -123,61 +124,89 @@
         </div>
           <div class="form-group col-md-2 mt-2">
               <label></label>
-              <button type="button" class="btn btn-primary" onclick="getLocation()">Capture Location</button>
+              <button type="button" class="btn btn-primary" hidden onclick="getLocation()">Capture Location</button>
           </div>
       </div>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label for="landmark">Step 2: Enter Landmark</label>
-                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
+        <div id="LandmarkDiv" style="display: none;transition: opacity 0.5s ease-in-out;">
+            <div class="form-row ">
+                <div class="form-group col-md-6">
+                    <label for="landmark">Step 1: Enter Landmark</label>
+                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
+                </div>
+                <div class="row align-items-center justify-content-center">
+                    <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-right"></i></button>
+                </div>
             </div>
         </div>
 
 
 
 
-        <div class="form-group" style="height: auto; width: auto;padding: 5px; overflow: auto">
-            <label class="form-group">Step 3: Open Camera</label><br>
-            <canvas id="previewImageCanvas" style="width: fit-content; height:fit-content;padding: 10px;border: 1px solid rgb(128,128,128); border-radius: 10px"></canvas>
-            <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
+       <div id="CameraDiv" style="display: none">
+           <div class="form-group align-items-center justify-content-center" style="height: 40%; width: 100%; overflow: auto">
+               <div class="row align-items-center justify-content-center">
+                   <label class="form-group">Step 2: Open Camera</label><br>
+                   <canvas id="previewImageCanvas" style="width: fit-content; height:fit-content;padding: 10px;border: 1px solid rgb(128,128,128); border-radius: 10px"></canvas>
+                   <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
+               </div>
+               <div class="row align-items-center justify-content-center">
+                   <button id="openCameraBtn" type="button" style="width: 50px" class="btn btn-secondary mt-2  text-center"><i class="fa fa-camera"></i> </button>
+               </div>
+
+
+           </div>
+           <div class="form-group row align-items-center justify-content-center">
+               <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(1)"><i class="fa fa-arrow-left"></i> </button>
+               <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-right"></i></button>
+           </div>
+
+       </div>
+
+        <div id="AnimalDiv" style="display: none">
+            <div class="form-group mt-2">
+                <label for="animalType">Step 3:Animal Type</label>
+                <select type="text" class="form-control" id="animalType" name="animalType" onchange="othersTextBox()" required>
+                    {% for animal in animals %}
+                        <option value="{{ animal.animal }}">{{ animal.animal }}</option>
+                    {% endfor %}
+                    <option value="others">Others</option>
+                </select>
+            </div>
+            <div class="form-group mt-2" id="othersDiv"  style="display: none">
+                <label for="animalType">Enter Animal type in Box</label>
+                <input type="text" class="form-control" name="otherInput" id="otherInput">
+            </div>
+            <div class="row align-items-center justify-content-center">
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-left"></i></button>
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(4)"><i class="fa fa-arrow-right"></i></button>
+            </div>
         </div>
 
 
-        <div class="form-group">
-
-            <button id="openCameraBtn" type="button" class="btn btn-secondary mt-2">Open Camera</button>
-        </div>
 
 
 
+
+      <div id="StatusDiv" style="display: none">
+          <div class="form-group">
+              <label for="status">Step 4:Status of Animal when rescued:</label>
+              <select class="form-control" id="status" name="status" required>
+                  <option value="Normal">Normal</option>
+                  <option value="Critical">Critical</option>
+                  <option value="Injured">Injured</option>
+              </select>
+          </div>
+          <div class="row align-items-center justify-content-center">
+              <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-left"></i></button>
+              <button type="submit" name="saveButton" class="btn btn-success" style="width: 50px" onclick="validateForm()"><i class="fa fa-save"></i></button>
+          </div>
+
+      </div>
 
         <div class="form-group mt-2">
-        <label for="animalType">Step 4:Animal Type</label>
-        <select type="text" class="form-control" id="animalType" name="animalType" onchange="othersTextBox()" required>
-            {% for animal in animals %}
-                <option value="{{ animal.animal }}">{{ animal.animal }}</option>
-            {% endfor %}
-            <option value="others">Others</option>
-        </select>
-      </div>
-        <div class="form-group mt-2" id="othersDiv"  style="display: none">
-            <label for="animalType">Enter Animal type in Box</label>
-           <input type="text" class="form-control" name="otherInput" id="otherInput">
-        </div>
 
-      <div class="form-group">
-        <label for="status">Step 5:Status of Animal when rescued:</label>
-        <select class="form-control" id="status" name="status" required>
-            <option value="Normal">Normal</option>
-            <option value="Critical">Critical</option>
-            <option value="Injured">Injured</option>
-        </select>
-      </div>
 
-        <div class="form-group mt-2">
-
-            <button type="submit" name="saveButton" class="btn btn-primary" onclick="validateForm()">SAVE</button>
-            <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+            <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()"><i class="fa fa-remove"> Cancel</i></button>
 
         </div>
 
@@ -188,11 +217,43 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
 
 
 
   <script>
+
+      divFlowChange(1)
+      function divFlowChange(id){
+          const landmarkDivElement = document.getElementById('LandmarkDiv')
+          const cameraDivElement = document.getElementById('CameraDiv')
+          const animalDivElement = document.getElementById('AnimalDiv')
+          const statusDivElement = document.getElementById('StatusDiv')
+
+          if(id === 1){
+              landmarkDivElement.style.display = "block";
+              cameraDivElement.style.display = "none";
+              animalDivElement.style.display = "none";
+              statusDivElement.style.display = "none";
+          }
+          if(id === 2){
+              landmarkDivElement.style.display = "none";
+              cameraDivElement.style.display = "block";
+              animalDivElement.style.display = "none";
+              statusDivElement.style.display = "none";
+          }
+          if(id === 3){
+              landmarkDivElement.style.display = "none";
+              cameraDivElement.style.display = "none";
+              animalDivElement.style.display = "block";
+              statusDivElement.style.display = "none";
+          }
+          if(id === 4){
+              landmarkDivElement.style.display = "none";
+              cameraDivElement.style.display = "none";
+              animalDivElement.style.display = "none";
+              statusDivElement.style.display = "block";
+          }
+      }
 
 
       const videoCam = document.getElementById("videoCam");
@@ -349,7 +410,7 @@
 
           latitudeElement.value = latitude;
           longitudeElement.value = longitude;
-          swal("Location Capture Successful");
+          //swal("Location Capture Successful");
       }
 
       function showError(error) {
@@ -368,6 +429,8 @@
                   break;
           }
       }
+
+      getLocation();
 
       function getimageInFile(){
           const canvas = document.getElementById('previewImageCanvas');
@@ -397,22 +460,24 @@
             stream.getTracks().forEach(track => track.stop());
         }
         isCameraOn = false;
-
-
-
     }
 
     function validateForm(){
+        getLocation()
         const latE = document.getElementById("latitude");
         const longE = document.getElementById("longitude");
         const file = document.getElementById('fileInputImage');
 
         if(file.files.length<=0){
             swal("Please Capture Picture")
+        }else {
+            getLocation()
         }
 
         if(latE.value.length <=0 || longE.value.length <= 0){
             swal("Please Capture Location")
+        }else{
+            getLocation()
         }
     }
 
