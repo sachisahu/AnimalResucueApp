@@ -27,10 +27,8 @@ def registerAnimal(request):
             status = request.POST.get('status')
             otherInput = request.POST.get('otherInput')
 
-
             if animal == 'others':
                 animal = otherInput
-
 
             print(image)
 
@@ -105,9 +103,10 @@ def releaseAnimal(request):
 
 @login_required(login_url='/login')
 def report(request):
-    allResecues = AnimalRescued.objects.all()
+    # allResecues = AnimalRescued.objects.all().order_by('-pickup_date', '-release_date')
+    allResecues = AnimalRescued.objects.all().order_by('-id')
     context = {
-        "allResecues":allResecues
+        "allResecues": allResecues
 
     }
-    return render(request, 'report.html',context)
+    return render(request, 'report.html', context)
