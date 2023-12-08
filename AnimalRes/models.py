@@ -9,6 +9,7 @@ class Rescuers(models.Model):
 
 class Animal(models.Model):
     animal = models.CharField(max_length=100, null=True)
+    pic_url = models.CharField(max_length=1000,null=True)
 
 
 class AnimalRescued(models.Model):
