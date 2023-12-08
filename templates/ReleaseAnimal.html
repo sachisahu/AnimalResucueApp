@@ -160,18 +160,19 @@
 
 
 
+        <div class="container">
+            <h4 class="text-center">Release Form</h4>
+            <div class="col">
+                <label>S.NO</label>
+                <input type="text" class="form-control" id="release_slno" name="release_slno" readonly  required >
+            </div>
+        </div>
 <div class="container">
-    <h4 class="text-center">Release Form</h4>
+
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div class="col">
-            <label>S.NO</label>
-            <input type="text" class="form-control" id="release_slno" name="release_slno" readonly  required >
-        </div>
-
-
-        <div class="form-row ">
+        <div class="form-row " style="display: none">
             <label class="form-group mt-2">Step 2: Capture Location</label>
             <div class="form-group col-md-5">
                 <label for="latitude" hidden>Latitude:</label>
@@ -190,30 +191,44 @@
                 <button type="button" class="btn btn-primary" onclick="getLocation()">Capture Location</button>
             </div>
         </div>
-        <div class="form-row mt-2">
-            <div class="form-group col-md-6">
-                <label for="landmark">Step 3:Enter Landmark</label>
-                <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
+        <div id="LandmarkDiv" style="display: none">
+            <div class="form-row mt-2">
+                <div class="form-group col-md-6">
+                    <label for="landmark">Step 3:Enter Landmark</label>
+                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-center">
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
 
 
 
 
-        <div class="form-group" style="height: auto; width: auto;padding: 5px; overflow: auto">
+
+        <div id="CameraDiv" style="display: none">
+        <div class="form-group" style="height: 40%; width: 100%;padding: 5px; overflow: auto">
             <label class="form-group mt-2">Step 4: Open Camera</label><br>
             <canvas id="previewImageCanvas" class="mt-2" style="width: max-content; height:max-content;padding: 10px; border: 1px solid gray; border-radius: 10px"></canvas>
             <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
         </div>
 
-        <div class="form-group mt-2">
-            <button id="openCameraBtn" type="button" class="btn btn-secondary mt-2">Open Camera</button>
+
+            <div class="row align-items-center justify-content-center">
+                <button id="openCameraBtn" type="button" style="width: 50px" class="btn btn-secondary mt-2  text-center"><i class="fa fa-camera"></i> </button>
+            </div>
+            <div class="form-group row align-items-center justify-content-center">
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(1)"><i class="fa fa-arrow-left"></i> </button>
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-right"></i></button>
+            </div>
         </div>
 
 
 
 
 
+        <div id="StatusDiv" style="display: none">
         <div class="form-group">
             <label for="status">Step 5: Status of Animal when released:</label>
             <select class="form-control" id="status" name="status" required>
@@ -223,10 +238,12 @@
             </select>
         </div>
 
-        <div class="form-group mt-2">
-            <button type="submit" name="saveButton" onclick="validateForm()" class="btn btn-primary">SAVE</button>
-            <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()">CANCEL</button>
+            <div class="row align-items-center justify-content-center">
+                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-left"></i></button>
+                <button type="submit" name="saveButton" class="btn btn-success" style="width: 50px" onclick="validateForm()"><i class="fa fa-save"></i></button>
+            </div>
         </div>
+        <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()"><i class="fa fa-remove"> Cancel</i></button>
     </form>
 </div>
 </div>
@@ -241,6 +258,29 @@
 
 
 <script>
+    divFlowChange(1);
+    getLocation();
+    function divFlowChange(id){
+        const landmarkDivElement = document.getElementById('LandmarkDiv')
+        const cameraDivElement = document.getElementById('CameraDiv')
+        const statusDivElement = document.getElementById('StatusDiv')
+
+        if(id === 1){
+            landmarkDivElement.style.display = "block";
+            cameraDivElement.style.display = "none";
+            statusDivElement.style.display = "none";
+        }
+        if(id === 2){
+            landmarkDivElement.style.display = "none";
+            cameraDivElement.style.display = "block";
+            statusDivElement.style.display = "none";
+        }
+        if(id === 3){
+            landmarkDivElement.style.display = "none";
+            cameraDivElement.style.display = "none";
+            statusDivElement.style.display = "block";
+        }
+    }
 
 
     const videoCam = document.getElementById("videoCam");
@@ -427,10 +467,10 @@
         distanceVariance.value = (distance * 1000).toFixed(0)
 
         if(distance<1){
-            swal("Distance from release Site is "+(distance*1000).toFixed(0)+" meter")
+            //swal("Distance from release Site is "+(distance*1000).toFixed(0)+" meter")
         }
         else {
-            swal("Distance from release Site is "+distance.toFixed(2)+" KM")
+            //swal("Distance from release Site is "+distance.toFixed(2)+" KM")
         }
 
 
@@ -542,16 +582,21 @@
 
 
     function validateForm(){
+        getLocation();
         const latE = document.getElementById("latitude");
         const longE = document.getElementById("longitude");
         const file = document.getElementById('fileInputImage');
 
         if(file.files.length<=0){
             swal("Please Capture Picture")
+        }else {
+            getLocation();
         }
 
         if(latE.value.length <=0 || longE.value.length <= 0){
             swal("Please Capture Location")
+        }else {
+            getLocation();
         }
     }
 
