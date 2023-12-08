@@ -32,24 +32,28 @@
         </div>
         <div style="margin-bottom: 20px;">
 
+            {% if request.user.is_authenticated %}
+            <button type="submit" style="width: 100px;color: #fff" onclick="location.href='/logout'" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">Logout</button>
+            {% else %}
+                <a href="/login"><button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">login</button></a>
+            {% endif %}
+
         </div>
 
 
     </div>
     <div class="logoutButton">
-        {% if request.user.is_authenticated %}
+
             <form action='/logout' method='POST'>
                 {% csrf_token %}
-                <button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">Logout</button>
-            </form>
-            {% else %}
-            <a href="/login"><button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">login</button></a>
 
-        {% endif %}
+            </form>
+
 
     </div>
 
     <div class="d-flex justify-content-center">
+
         <div class="row">
             <div class="col-sm">
                 <button type='submit' onclick="location.href='registerAnimal'" style='background:transparent; border:0px'>
