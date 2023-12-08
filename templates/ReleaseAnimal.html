@@ -211,11 +211,11 @@
 
         <div id="CameraDiv" style="display: none">
             <div class="form-group align-items-center justify-content-center">
-                <div class="row align-items-center justify-content-center" style="height: 300px; width: 100%; overflow: auto">
-                    <label class="form-group mt-2">Step 4: Open Camera</label><br>
-                    <canvas id="previewImageCanvas" class="mt-2" style="width: max-content; height:max-content;padding: 10px; border: 1px solid gray; border-radius: 10px"></canvas>
-                    <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
+                <label class="form-group mt-2">Step 4: Open Camera</label>
+                <div class="row align-items-center justify-content-center mt-1" style="height: 300px; width: 100%; overflow: auto">
+                    <canvas id="previewImageCanvas" style="width: fit-content; height:300px;padding: 10px; border: 1px solid gray; border-radius: 10px"></canvas>
                 </div>
+                <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
             </div>
             <div class="row align-items-center justify-content-center">
                 <button id="openCameraBtn" type="button" style="width: 50px" class="btn btn-secondary mt-2  text-center"><i class="fa fa-camera"></i> </button>
