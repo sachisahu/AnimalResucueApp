@@ -195,11 +195,31 @@
       <div id="StatusDiv" style="display: none">
           <div class="form-group">
               <label for="status">Step 4:Status of Animal when rescued:</label>
-              <select class="form-control" id="status" name="status" required>
-                  <option value="Normal">Normal</option>
-                  <option value="Critical">Critical</option>
-                  <option value="Injured">Injured</option>
-              </select>
+{#              <select class="form-control" id="status" name="status" required>#}
+{#                  <option value="Normal">Normal</option>#}
+{#                  <option value="Critical">Critical</option>#}
+{#                  <option value="Injured">Injured</option>#}
+{#              </select>#}
+              <div class="row mt-2">
+                  <div class="col-4">
+                      <input class="form-check-input" type="radio" name="status" id="statusNormal" value="Normal" disabled>
+                      <label class="form-check-label" for="statusNormal" onclick="enableRadioStatus('statusNormal')">
+                          <b style="font-size: 100px">😊</b>
+                      </label>
+                  </div>
+                  <div class="col-4">
+                      <input class="form-check-input" type="radio" name="status" id="statusSick" value="Normal" disabled>
+                      <label class="form-check-label" for="statusSick" onclick="enableRadioStatus('statusSick')">
+                          <b style="font-size: 100px">😢</b>
+                      </label>
+                  </div>
+                  <div class="col-4">
+                      <input class="form-check-input" type="radio" name="status" id="statusCritical" value="Normal" disabled>
+                      <label class="form-check-label" for="statusCritical" onclick="enableRadioStatus('statusCritical')">
+                          <b style="font-size: 100px">🤢</b>
+                      </label>
+                  </div>
+              </div>
           </div>
           <div class="row align-items-center justify-content-center">
               <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-left"></i></button>
@@ -262,6 +282,11 @@
 
       function enableRadio(animalId) {
           var radio = document.getElementById("animal_" + animalId);
+          radio.disabled = false;
+      }
+
+      function enableRadioStatus(statusID){
+          var radio = document.getElementById(statusID);
           radio.disabled = false;
       }
 
