@@ -83,6 +83,18 @@
                 </button>
             </div>
 
+            {% if request.user.is_superuser %}
+                <div class="col-sm">
+                    <button type='submit' onclick="location.href='admin'" style='background:transparent; border:0px'>
+                        <div class="p-5 m-5"
+                             style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:150px; background:#6F8FAF ; border-radius:10px">
+                            <h3><i class="fa fa-user" aria-hidden="true" style="font-size: 70px"></i></h3>
+                        </div>
+
+                    </button>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 

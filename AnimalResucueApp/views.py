@@ -33,8 +33,6 @@ def userSignUP(request):
             userID = request.POST.get('userId')
             userPass = request.POST.get('userpassword')
             user = User.objects.create_user(userID, userID, userPass)
-            print(user)
-
 
     return render(request, "login.html")
 

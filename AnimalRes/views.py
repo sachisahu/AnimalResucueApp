@@ -3,8 +3,10 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
-from AnimalRes.models import Animal, AnimalRescued
+from AnimalRes.models import Animal, AnimalRescued, Rescuers
 from AnimalRes.utils import uploadResourcesToDigitalOcean
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 def home(request):
@@ -43,8 +45,9 @@ def registerAnimal(request):
                 pickup_status=status
             )
             animalRes.save()
+            return redirect("/registerAnimal")
 
-    return render(request, "NewAnimal.html", context)
+    return render(request, "RegisterAnimal.html", context)
 
 
 @login_required(login_url='/login')
@@ -106,3 +109,64 @@ def report(request):
 
     }
     return render(request, 'report.html', context)
+
+@login_required(login_url='/login')
+def admin(request):
+    if not request.user.is_superuser:
+        return HttpResponse("Page Not Found 404")
+
+    rescuers = Rescuers.objects.all()
+
+    context = {
+        "users": rescuers,
+    }
+
+    if request.method == 'POST':
+        if 'uplodeAnimalPictureToListBtn' in request.POST:
+            animalName = request.POST.get("AnimalNameUplode")
+            animalPicture = request.FILES['AnimalPictureUplode']
+
+            animalPictureUrl = uploadResourcesToDigitalOcean("animalPics", animalPicture)
+
+            newAnimal = Animal(
+                animal=animalName,
+                pic_url=animalPictureUrl
+            )
+            newAnimal.save()
+            context["haveMessage"] = True,
+            context["mess"] = "Animal Added Successfully"
+            messages.info(request, 'Animal Added Successfully')
+            return render(request, 'Admin.html', context)
+
+        if 'saveCreateUserBtn' in request.POST:
+            userName = request.POST.get("UserNameCreateUser")
+            password = request.POST.get('PasswordCreateUser')
+
+            checkUserExistes = Rescuers.objects.all().filter(userName=userName).first()
+
+            if checkUserExistes:
+                messages.info(request, 'Username Already Existes')
+                return render(request, 'Admin.html', context)
+            else:
+                User.objects.create_user(userName, userName, password)
+                rescuers = Rescuers(
+                    userName=userName
+                )
+                rescuers.save()
+                messages.info(request, 'Username Created Successfully')
+                return render(request, 'Admin.html', context)
+
+        if 'updateUserPasswordBtn' in request.POST:
+            userName = request.POST.get("updatePasswordUsername")
+            password = request.POST.get('updatePasswordPassword')
+
+            checkUserExistes = User.objects.all().filter(username=userName).first()
+            if checkUserExistes:
+                u = User.objects.get(username__exact=userName)
+                u.set_password(password)
+                u.save()
+
+                messages.info(request, 'Password Updated Successfully')
+                return render(request, 'Admin.html', context)
+
+    return render(request, "Admin.html", context)
