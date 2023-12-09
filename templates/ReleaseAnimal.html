@@ -277,7 +277,6 @@
 
 <script>
     divFlowChange(1);
-    getLocation();
     function divFlowChange(id){
         const landmarkDivElement = document.getElementById('LandmarkDiv')
         const cameraDivElement = document.getElementById('CameraDiv')
@@ -489,13 +488,11 @@
         distanceVariance.value = (distance * 1000).toFixed(0)
 
         if(distance<1){
-            //swal("Distance from release Site is "+(distance*1000).toFixed(0)+" meter")
+            swal("You are "+(distance*1000).toFixed(0)+" meter Away from Release Location")
         }
         else {
-            //swal("Distance from release Site is "+distance.toFixed(2)+" KM")
+            swal("You are "+distance.toFixed(2)+" KM Away from Release Location")
         }
-
-
 
         latitudeElement.value = latitude;
         longitudeElement.value = longitude;
@@ -583,6 +580,7 @@
                     releaseLocation.href = locationlink;
                     pickup_lat = data.latitude;
                     pickup_long = data.longitude;
+                    getLocation();
                 }else {
                     if(responseStatus == 404){
                         swal(response.message);
