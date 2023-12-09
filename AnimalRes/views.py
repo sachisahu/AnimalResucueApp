@@ -30,10 +30,7 @@ def registerAnimal(request):
             if animal == 'others':
                 animal = otherInput
 
-            print(image)
-
             picURLurl = uploadResourcesToDigitalOcean('picupAnimal', image)
-            print(picURLurl)
 
             animalRes = AnimalRescued(
                 pickup_date=datetime.datetime.today(),
@@ -82,7 +79,6 @@ def releaseAnimal(request):
             animalDetails = AnimalRescued.objects.all().filter(id=slno).first()
             if animalDetails:
                 if animalDetails.release_status is None:
-                    print("hittingrelese" + str(animalDetails))
                     animalData = {
                         'id': animalDetails.id,
                         'type': animalDetails.animal,
