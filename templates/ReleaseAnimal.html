@@ -67,7 +67,7 @@
 <body>
 <div class="bg-modal">
     <div class="modal-contents">
-        <div id="cameradiv">
+        <div id="cameradivopen">
             <div class="row">
                 <video id="videoCam" playsinline autoplay width="100%" height="90%" style="z-index: 1"></video>
             </div>
@@ -76,7 +76,6 @@
                     <button id="openCamera" type="button" hidden>Open Cam</button>
                 </div>
                 <div class="col">
-{#                    <button id="captureButton" type="button" >Capture Image</button>#}
                     <button type="button" class="btn btn-dark btn-lg" id="captureButton">
                         <i class="fa fa-camera"></i>
                     </button>
@@ -121,7 +120,7 @@
         </div>
     </form>
     <div id="showDetails" style="display: none">
-        <div class="container">
+        <div class="container" id="AnimalDetails">
             <h4 class="text-center">Animal Details</h4>
             <table class="table table-bordered">
                 <thead>
@@ -143,7 +142,7 @@
                                 </div>
                                 <div class="row">
                                     <h6>Landmark:</h6>
-                                    <span id="landmark"></span>
+                                    <span id="landmarkspan"></span>
                                 </div>
                                 <div class="row">
                                     <a id="releaseLocation" class="btn btn-primary m-2" style="width: 150px" target="_blank"><i class="fa fa-map-marker"></i> Open Map</a>
@@ -164,7 +163,7 @@
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="container">
+        <div class="container" hidden>
             <h4 class="text-center">Release Form</h4>
             <div class="col">
                 <label>S.NO</label>
@@ -204,14 +203,9 @@
                 <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
-
-
-
-
-
         <div id="CameraDiv" style="display: none">
             <div class="form-group align-items-center justify-content-center">
-                <label class="form-group mt-2">Step 4: Open Camera</label>
+                <label class="form-group mt-2">Step 4: Take Picture</label>
                 <div class="row align-items-center justify-content-center mt-1" style="height: 300px; width: 100%; overflow: auto">
                     <canvas id="previewImageCanvas" style="width: fit-content; height:300px;padding: 10px; border: 1px solid rgb(128,128,128); border-radius: 10px"></canvas>
                 </div>
@@ -226,14 +220,9 @@
                 <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
-
-
-
-
-
         <div id="StatusDiv" style="display: none">
         <div class="form-group">
-            <label for="status">Step 5: Status of Animal when released:</label>
+            <label >Step 5: Status of Animal when released:</label>
             <div class="row mt-2">
                 <div class="col-4">
                     <input class="form-check-input" type="radio" name="status" id="statusCured" value="Cured" disabled>
@@ -279,26 +268,39 @@
 
 
 <script>
-    divFlowChange(1);
+    divFlowChange(0)
     function divFlowChange(id){
         const landmarkDivElement = document.getElementById('LandmarkDiv')
         const cameraDivElement = document.getElementById('CameraDiv')
         const statusDivElement = document.getElementById('StatusDiv')
+        const detailsDivElement = document.getElementById('showDetails')
+        const animaldetailsDivElement = document.getElementById('AnimalDetails')
+
+        if(id === 0){
+            landmarkDivElement.style.display = "block";
+            cameraDivElement.style.display = "none";
+            statusDivElement.style.display = "none";
+
+            animaldetailsDivElement.style.display = 'block';
+        }
 
         if(id === 1){
             landmarkDivElement.style.display = "block";
             cameraDivElement.style.display = "none";
             statusDivElement.style.display = "none";
+            animaldetailsDivElement.style.display = 'block';
         }
         if(id === 2){
             landmarkDivElement.style.display = "none";
             cameraDivElement.style.display = "block";
             statusDivElement.style.display = "none";
+            animaldetailsDivElement.style.display = 'none';
         }
         if(id === 3){
             landmarkDivElement.style.display = "none";
             cameraDivElement.style.display = "none";
             statusDivElement.style.display = "block";
+            animaldetailsDivElement.style.display = 'none';
         }
     }
 
@@ -558,7 +560,7 @@
         const release_slno = document.getElementById("release_slno");
         const animal = document.getElementById("animal");
         const pic = document.getElementById("pic");
-        const landmark = document.getElementById("landmark");
+        const landmark = document.getElementById("landmarkspan");
         const releaseLocation = document.getElementById("releaseLocation");
 
         const showDetailsDiv = document.getElementById("showDetails");
