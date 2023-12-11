@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="AnimalRescueApp@db-mysql-blr1-74221-do-user-14553240-0.b.db.ondigitalocean.com" uuid="cf91135b-c3d2-40b8-ba29-7df0a15317ff">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://db-mysql-blr1-74221-do-user-14553240-0.b.db.ondigitalocean.com:25060/AnimalRescueApp</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>
