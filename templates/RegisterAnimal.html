@@ -100,7 +100,7 @@
   <div class="container my-4">
         <h2 class="mb-4 text-center">REGISTER NEW ANIMAL</h2>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
         {% csrf_token %}
 
 
@@ -160,7 +160,7 @@
                     <div class="row mt-2">
                         {% for animal in animals %}
                            <div class="col m-1">
-                               <input class="form-check-input" type="radio" name="animalType" id="animal_{{ animal.animal }}" value="{{ animal.animal }}" disabled>
+                               <input class="form-check-input" type="radio" name="animalType" id="animal_{{ animal.animal }}" value="{{ animal.animal }}" disabled required>
                                <label class="form-check-label" for="animal_{{ animal.animal }}">
                                    <img src="{{ animal.pic_url }}" height="100" width="100" onclick="enableRadio('{{ animal.animal }}')" style="cursor: pointer;">
                                </label>
@@ -185,22 +185,22 @@
 
       <div id="StatusDiv" style="display: none">
           <div class="form-group">
-              <label for="status">Step 4:Status of Animal when rescued:</label>
+              <label>Step 4:Status of Animal when rescued:</label>
               <div class="row mt-2">
                   <div class="col-4">
-                      <input class="form-check-input" type="radio" name="status" id="statusNormal" value="Normal" disabled>
+                      <input class="form-check-input" type="radio" name="status" id="statusNormal" value="Normal" disabled required>
                       <label class="form-check-label" for="statusNormal" onclick="enableRadioStatus('statusNormal')">
                           <b style="font-size: 100px">😊</b>
                       </label>
                   </div>
                   <div class="col-4">
-                      <input class="form-check-input" type="radio" name="status" id="statusSick" value="Normal" disabled>
+                      <input class="form-check-input" type="radio" name="status" id="statusSick" value="Sick" disabled required>
                       <label class="form-check-label" for="statusSick" onclick="enableRadioStatus('statusSick')">
                           <b style="font-size: 100px">😢</b>
                       </label>
                   </div>
                   <div class="col-4">
-                      <input class="form-check-input" type="radio" name="status" id="statusCritical" value="Normal" disabled>
+                      <input class="form-check-input" type="radio" name="status" id="statusCritical" value="Critical" disabled required>
                       <label class="form-check-label" for="statusCritical" onclick="enableRadioStatus('statusCritical')">
                           <b style="font-size: 100px">🤢</b>
                       </label>
@@ -488,24 +488,32 @@
         const latE = document.getElementById("latitude");
         const longE = document.getElementById("longitude");
         const file = document.getElementById('fileInputImage');
-        var selectedAnimal = document.querySelector('input[name="animalType"]:checked');
+        const selectedAnimal = document.querySelector('input[name="animalType"]:checked');
+        const selectedStatus = document.querySelector('input[name="status"]:checked');
 
-
-        if(file.files.length<=0){
-            swal("Please Capture Picture")
-        }else {
-            getLocation()
+        if (file.files.length <= 0) {
+            swal("Please Capture Picture");
+            return false;
         }
 
-        if(latE.value.length <=0 || longE.value.length <= 0){
-            swal("Please Capture Location")
-        }else{
-            getLocation()
+        // Handle getLocation asynchronously if needed
+
+        if (latE.value.length <= 0 || longE.value.length <= 0) {
+            swal("Please Capture Location");
+            return false;
         }
 
         if (!selectedAnimal) {
             swal("Please select an animal.");
+            return false;
         }
+
+        if (!selectedStatus) {
+            swal("Please Select Status");
+            return false;
+        }
+        
+        return true;
     }
 
     function othersTextBox(){

@@ -153,7 +153,7 @@
 
 
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
         {% csrf_token %}
         <div class="container" hidden>
             <h4 class="text-center">Release Form</h4>
@@ -236,12 +236,10 @@
                 </div>
             </div>
         </div>
-
             <div class="row align-items-center justify-content-center">
                 <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-left"></i></button>
                 <button type="submit" name="saveButton" class="btn btn-success" style="width: 50px" onclick="validateForm()"><i class="fa fa-save"></i></button>
             </div>
-        </div>
         <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()"><i class="fa fa-remove"> Cancel</i></button>
     </form>
 
@@ -593,22 +591,28 @@
 
 
     function validateForm(){
-        getLocation();
+        
         const latE = document.getElementById("latitude");
         const longE = document.getElementById("longitude");
         const file = document.getElementById('fileInputImage');
+        const selectedStatus = document.querySelector('input[name="status"]:checked');
+
 
         if(file.files.length<=0){
             swal("Please Capture Picture")
-        }else {
-            getLocation();
+            return false;
         }
 
         if(latE.value.length <=0 || longE.value.length <= 0){
             swal("Please Capture Location")
-        }else {
-            getLocation();
+            return false;
         }
+
+        if (!selectedStatus){
+            swal("Please Select Status")
+            return false;
+        }
+        return true;
     }
 
 
