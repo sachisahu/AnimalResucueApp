@@ -34,6 +34,7 @@ def registerAnimal(request):
 
             picURLurl = uploadResourcesToDigitalOcean('picupAnimal', image)
 
+
             animalRes = AnimalRescued(
                 pickup_date=datetime.datetime.today(),
                 pickup_time=datetime.datetime.now(),
@@ -95,7 +96,7 @@ def releaseAnimal(request):
                     return JsonResponse({'message': "Animal Already Released", 'status': 404})
 
             else:
-                return JsonResponse({'message': "Invalid Slno", 'status': 404})
+                return JsonResponse({'message': "No Animal Found", 'status': 404})
 
     return render(request, "ReleaseAnimal.html")
 
