@@ -9,7 +9,6 @@ from django.contrib import messages
 def userLogin(request):
     if request.method == 'POST':
         if 'loginBtn' in request.POST:
-            print("Hitting")
             userID = request.POST.get('userId')
             userPass = request.POST.get('userpassword')
             user = authenticate(request, username=userID, password=userPass)

@@ -109,6 +109,15 @@ def report(request):
         "allResecues": allResecues
 
     }
+
+    if request.method == 'POST':
+        if 'removeARecordButton' in request.POST:
+            slno = request.POST.get("recordID")
+
+            removeObj = AnimalRescued.objects.all().filter(id = slno).first()
+            removeObj.delete()
+            return redirect("/report")
+
     return render(request, 'report.html', context)
 
 @login_required(login_url='/login')
