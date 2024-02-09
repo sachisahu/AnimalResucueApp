@@ -42,6 +42,8 @@
         <div style="margin-bottom: 20px;">
 
         </div>
+        <h4 class="text-center">Report</h4>
+        <hr>
 
 
     </div>
@@ -50,14 +52,14 @@
 
 <div class="container mt-5 text-center align-middle" style="width: 100%; overflow: auto">
 
-    <h4 class="text-center">Report</h4>
-        <hr>
+    
     <table class="table">
         <thead>
         <tr>
             <th scope="col">S.no</th>
             <th scope="col">Date of Capture</th>
             <th scope="col">Date Of Release</th>
+            <th scope="col">Pickup Location</th>
             <th scope="col">Animal</th>
             <th scope="col">Status While Capturing</th>
             <th scope="col">Status before Releasing</th>
@@ -78,6 +80,7 @@
                         Not Yet Released
                     {% endif %}
                 </td>
+                <td>{{ rep.pickup_landmark }}</td>
                 <td>{{ rep.animal }}</td>
                 <td>{{ rep.pickup_status }}</td>
                 <td>
