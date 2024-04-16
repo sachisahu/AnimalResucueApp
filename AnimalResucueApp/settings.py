@@ -78,14 +78,25 @@ WSGI_APPLICATION = 'AnimalResucueApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'AnimalRescueApp',
+#         'HOST':'db-mysql-blr1-74221-do-user-14553240-0.b.db.ondigitalocean.com',
+#         'PORT':'25060',
+#         'USER':'sahu',
+#         'PASSWORD':'AVNS_P84CetQ7qPBorl1-gHj'
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'AnimalRescueApp',
-        'HOST':'db-mysql-blr1-74221-do-user-14553240-0.b.db.ondigitalocean.com',
+        'HOST':'db-mysql-blr1-23172-do-user-16314120-0.c.db.ondigitalocean.com',
         'PORT':'25060',
-        'USER':'sahu',
-        'PASSWORD':'AVNS_P84CetQ7qPBorl1-gHj'
+        'USER':'doadmin',
+        'PASSWORD':'AVNS_BrOJ7BcbzucDh1DO4HL'
     }
 }
 
