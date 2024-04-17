@@ -1,12 +1,15 @@
 import datetime
 import json
+import time
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
 from AnimalRes.models import Animal, AnimalRescued, Rescuers
-from AnimalRes.utils import uploadResourcesToDigitalOcean
+from AnimalRes.utils import uploadResourcesToDigitalOcean,moveImages
 from django.contrib.auth.models import User
 from django.contrib import messages
+
 
 
 def home(request):
@@ -180,3 +183,34 @@ def admin(request):
                 return render(request, 'Admin.html', context)
 
     return render(request, "Admin.html", context)
+
+
+def reuplodeSpaceChanges(request,start,end):
+    start = int(start)
+    end = int(end)
+
+    for cid in range(start,end):
+        currentObj = AnimalRescued.objects.all().filter(id = cid).first()
+        if currentObj is not None:
+            newurlpicup = moveImages(currentObj.pickup_animalPhoto,"picupAnimal")
+            print(f"PicUploded Pickup id: {cid}")
+            currentObj.pickup_animalPhoto = newurlpicup
+            currentObj.save()
+            print(f"Updated On Pickup DB id: {cid}")
+
+            if currentObj.release_animalPhoto is not None:
+                newurlrelease = moveImages(currentObj.release_animalPhoto,"releaseAnimal")
+                print(f"PicUploded release id: {cid}")
+                currentObj.release_animalPhoto = newurlrelease
+                currentObj.save()
+                print(f"Updated On release DB id: {cid}")
+            else:
+                print(f"Animal Not Yet released  for id:{cid}")
+
+        else:
+            print(f"Row for id:{cid} Not found")
+
+
+    return HttpResponse("Completed")
+
+
