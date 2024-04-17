@@ -7,6 +7,6 @@ urlpatterns = [
     path('releaseAnimal', views.releaseAnimal),
     path('report', views.report),
     path('admin', views.admin),
-    path('reuplodeSpaceChanges/<int:start>/<int:end>', views.reuplodeSpaceChanges),
+    path('reuplodeSpaceChanges2/<int:start>/<int:end>', views.reuplodeSpaceChanges2),
 
 ]

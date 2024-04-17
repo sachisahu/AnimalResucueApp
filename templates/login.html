@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ logofavicon }}">
     <title>Login Page</title>
     <style>
         body {
@@ -93,7 +94,7 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <img src="https://animalrescuesresources.blr1.digitaloceanspaces.com/icons/logo.jpg" alt="Logo">
+            <img src="{{ logourl }}" alt="Logo">
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}

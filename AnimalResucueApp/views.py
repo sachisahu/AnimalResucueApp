@@ -2,11 +2,16 @@ from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from  AnimalResucueApp import settings
 
 
 
 
 def userLogin(request):
+    context = {
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
+    }
     if request.method == 'POST':
         if 'loginBtn' in request.POST:
             userID = request.POST.get('userId')
@@ -18,14 +23,13 @@ def userLogin(request):
                 return redirect('/')
             else:
                 messages.info(request,'Invalid Credentials')
-                return render(request, "login.html")
+                return render(request, "login.html",context)
 
 
-
-
-    return render(request, "login.html")
+    return render(request, "login.html",context)
 
 def userSignUP(request):
+
     if request.method == 'POST':
         if 'loginBtn' in request.POST:
             print("Hitting")
