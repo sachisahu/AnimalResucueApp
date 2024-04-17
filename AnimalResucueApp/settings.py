@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7jcly(x*f36ftqfrk%+ptp!my*es@dt5c5v*dwl3cp*!=bbm+d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -146,9 +146,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AWS_ACCESS_KEY_ID = 'DO00CEXHQL2U2G4B4X3L'
-AWS_SECRET_ACCESS_KEY = 'KYr7Dd0iYZcm+L/fPYTPB5AJh7TgdnIOlFBaRBxSzTU'
-AWS_STORAGE_BUCKET_NAME = 'animalrescuesresources'
+# AWS_ACCESS_KEY_ID = 'DO00CEXHQL2U2G4B4X3L'
+# AWS_SECRET_ACCESS_KEY = 'KYr7Dd0iYZcm+L/fPYTPB5AJh7TgdnIOlFBaRBxSzTU'
+# AWS_STORAGE_BUCKET_NAME = 'animalrescuesresources'
+AWS_ACCESS_KEY_ID = 'DO00FQ4TDE2GFWDATZJJ'
+AWS_SECRET_ACCESS_KEY = 'hQBH/J6y152sMUa95H1XntlWAmCSwu4GVpXZTg4lKs4'
+AWS_STORAGE_BUCKET_NAME = 'animalrescuesresources-space'
 AWS_S3_ENDPOINT_URL = 'https://blr1.digitaloceanspaces.com'
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": "max-age=86400",
