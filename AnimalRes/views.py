@@ -1,7 +1,7 @@
 import datetime
 import json
 import time
-
+from  AnimalResucueApp import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
@@ -13,7 +13,11 @@ from django.contrib import messages
 
 
 def home(request):
-    return render(request, "home.html")
+    context = {
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
+    }
+    return render(request, "home.html",context)
 
 
 @login_required(login_url='/login')
@@ -21,6 +25,8 @@ def registerAnimal(request):
     animals = Animal.objects.all()
     context = {
         "animals": animals,
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
     }
     if request.method == 'POST':
         if 'saveButton' in request.POST:
@@ -56,6 +62,10 @@ def registerAnimal(request):
 
 @login_required(login_url='/login')
 def releaseAnimal(request):
+    context = {
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
+    }
     if request.method == 'POST':
         if 'saveButton' in request.POST:
             slno = request.POST.get('release_slno')
@@ -101,7 +111,7 @@ def releaseAnimal(request):
             else:
                 return JsonResponse({'message': "No Animal Found", 'status': 404})
 
-    return render(request, "ReleaseAnimal.html")
+    return render(request, "ReleaseAnimal.html",context)
 
 
 @login_required(login_url='/login')
@@ -109,8 +119,9 @@ def report(request):
     # allResecues = AnimalRescued.objects.all().order_by('-pickup_date', '-release_date')
     allResecues = AnimalRescued.objects.all().order_by('-id')
     context = {
-        "allResecues": allResecues
-
+        "allResecues": allResecues,
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
     }
 
     if request.method == 'POST':
@@ -132,6 +143,8 @@ def admin(request):
 
     context = {
         "users": rescuers,
+        "logourl":settings.logoUrl,
+        "logofavicon":settings.logoFaviconUrl
     }
 
     if request.method == 'POST':
@@ -206,6 +219,25 @@ def reuplodeSpaceChanges(request,start,end):
                 print(f"Updated On release DB id: {cid}")
             else:
                 print(f"Animal Not Yet released  for id:{cid}")
+
+        else:
+            print(f"Row for id:{cid} Not found")
+
+
+    return HttpResponse("Completed")
+
+def reuplodeSpaceChanges2(request,start,end):
+    start = int(start)
+    end = int(end)
+
+    for cid in range(start,end):
+        currentObj = Animal.objects.all().filter(id = cid).first()
+        if currentObj is not None:
+            newurlpicup = moveImages(currentObj.pic_url,"animalPics")
+            print(f"PicUploded Pickup id: {cid}")
+            currentObj.pic_url = newurlpicup
+            currentObj.save()
+            print(f"Updated On Pickup DB id: {cid}")
 
         else:
             print(f"Row for id:{cid} Not found")
