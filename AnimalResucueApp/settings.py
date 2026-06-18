@@ -52,6 +52,13 @@ def load_local_env(env_path):
 load_local_env(BASE_DIR / '.env')
 
 
+def clean_env_url(value):
+    value = (value or '').strip()
+    if value.startswith('(') and value.endswith(')'):
+        value = value[1:-1].strip()
+    return value.strip().strip('"').strip("'").rstrip('/')
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -213,14 +220,16 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 CLOUDFLARE_R2_ENDPOINT_URL = os.environ.get(
     'CLOUDFLARE_R2_ENDPOINT_URL',
     'https://223b9beadfcbec1aad420de245a03869.r2.cloudflarestorage.com',
-).rstrip('/')
+)
 CLOUDFLARE_R2_BUCKET_NAME = os.environ.get('CLOUDFLARE_R2_BUCKET_NAME', 'pfa')
 CLOUDFLARE_R2_ACCESS_KEY_ID = os.environ.get('CLOUDFLARE_R2_ACCESS_KEY_ID', '')
 CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.environ.get('CLOUDFLARE_R2_SECRET_ACCESS_KEY', '')
+CLOUDFLARE_R2_ENDPOINT_URL = clean_env_url(CLOUDFLARE_R2_ENDPOINT_URL)
 CLOUDFLARE_R2_PUBLIC_BASE_URL = os.environ.get(
     'CLOUDFLARE_R2_PUBLIC_BASE_URL',
     f'{CLOUDFLARE_R2_ENDPOINT_URL}/{CLOUDFLARE_R2_BUCKET_NAME}',
-).rstrip('/')
+)
+CLOUDFLARE_R2_PUBLIC_BASE_URL = clean_env_url(CLOUDFLARE_R2_PUBLIC_BASE_URL)
 
 
 logoFaviconUrl = "https://upload.wikimedia.org/wikipedia/en/5/56/People_for_Animals_Official_Logo.png"
