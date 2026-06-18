@@ -124,23 +124,23 @@ WSGI_APPLICATION = 'AnimalResucueApp.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'pfa',
-#         'HOST':'pg-2a001833-sallubhoi01-a8e7.i.aivencloud.com',
-#         'PORT':'20470',
-#         'USER':'avnadmin',
-#         'PASSWORD':'AVNS_Xj4xQE-ol1eWfYjyQuF'
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pfa',
+        'HOST':'pg-2a001833-sallubhoi01-a8e7.i.aivencloud.com',
+        'PORT':20470,
+        'USER':'avnadmin',
+        'PASSWORD':'AVNS_Xj4xQE-ol1eWfYjyQuF'
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
