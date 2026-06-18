@@ -3,129 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | People For Animals</title>
     <link rel="icon" href="{{ logofavicon }}">
-    <title>Login Page</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .login-container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .login-container:hover {
-            transform: scale(1.02);
-        }
-
-        .logo img {
-            width: 200px;
-            border-radius: 10%;
-            margin-bottom: 20px;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .form-input {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 18px;
-            transition: border-color 0.3s ease-in-out;
-        }
-
-        .form-input:focus {
-            border-color: #41d8db;
-        }
-
-        .password-container {
-            position: relative;
-        }
-
-        .password-input {
-            padding-right: 40px;
-        }
-
-        .show-password {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            transition: color 0.3s ease-in-out;
-        }
-
-        .show-password:hover {
-            color: #41d8db;
-        }
-
-        .form-button {
-            padding: 15px;
-            background-color: #41d8db;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        .form-button:hover {
-            background-color: #41d8db;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="login-container">
-        <div class="logo">
-            <img src="{{ logourl }}" alt="Logo">
+<body class="min-h-screen bg-slate-950 text-slate-100">
+<div class="grid min-h-screen lg:grid-cols-[0.9fr_1.1fr]">
+    <section class="flex items-center justify-center bg-white px-8 py-12 text-slate-950">
+        <div class="w-full max-w-md">
+            <img src="{{ logourl }}" class="mb-8 h-20 w-20 rounded-2xl object-cover shadow-lg" alt="People For Animals">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Secure rescue operations portal</p>
+            <h1 class="mt-3 text-4xl font-bold">Sign in to your assigned operations dashboard</h1>
+
             {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}
-                    {% endfor %}
-                </ul>
+                <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    {% for message in messages %}{{ message }}{% endfor %}
+                </div>
             {% endif %}
 
+            <form class="mt-8 space-y-5" method="post">
+                {% csrf_token %}
+                <label class="block">
+                    <span class="text-sm font-semibold text-slate-700">User ID</span>
+                    <input class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none ring-teal-500 transition focus:ring-2" type="text" name="userId" required>
+                </label>
+                <label class="block">
+                    <span class="text-sm font-semibold text-slate-700">Password</span>
+                    <div class="mt-2 flex rounded-2xl border border-slate-200 bg-slate-50">
+                        <input id="passwordInput" class="w-full rounded-2xl bg-transparent px-4 py-3 outline-none" type="password" name="userpassword" required>
+                        <button class="px-4 text-sm font-semibold text-teal-700" type="button" onclick="togglePasswordVisibility()">Show</button>
+                    </div>
+                </label>
+                <button class="w-full rounded-2xl bg-teal-500 px-5 py-3 font-bold text-slate-950 shadow-lg shadow-teal-500/20 transition hover:bg-teal-400" name="loginBtn" type="submit">Sign In</button>
+            </form>
         </div>
-        <form class="login-form" method="post">
-            {% csrf_token %}
-            <input class="form-input" type="text" name="userId" placeholder="User ID" required>
-            <div class="password-container">
-                <input class="form-input password-input" type="password" name="userpassword" placeholder="Password" required>
-                <span class="show-password" onclick="togglePasswordVisibility()">
-                    👁️
-                </span>
+    </section>
+    <section class="relative hidden overflow-hidden p-10 lg:block">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,#14b8a633,transparent_30%),linear-gradient(135deg,#020617,#111827_50%,#134e4a)]"></div>
+        <div class="relative flex h-full flex-col justify-between rounded-[2rem] border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur">
+            <div>
+                <p class="text-sm uppercase tracking-[0.25em] text-teal-200">Platform capabilities</p>
+                <h2 class="mt-4 max-w-xl text-5xl font-bold leading-tight">Multi-location rescue operations with AI-assisted case review.</h2>
             </div>
-            <button class="form-button" name="loginBtn" type="submit">Login</button>
-        </form>
-    </div>
-
-    <script>
-        function togglePasswordVisibility() {
-            var passwordInput = document.querySelector('.password-input');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-            } else {
-                passwordInput.type = 'password';
-            }
-        }
-    </script>
+            <div class="grid gap-4">
+                <div class="rounded-3xl bg-white/10 p-5">
+                    <p class="font-semibold">Super administrator</p>
+                    <p class="mt-1 text-sm text-slate-300">Can oversee all locations, users, reports, and animal categories.</p>
+                </div>
+                <div class="rounded-3xl bg-white/10 p-5">
+                    <p class="font-semibold">Location administrator</p>
+                    <p class="mt-1 text-sm text-slate-300">Can manage releases, reports, and field users for the assigned location.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+function togglePasswordVisibility() {
+    const input = document.getElementById('passwordInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
 </body>
 </html>

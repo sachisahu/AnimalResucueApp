@@ -2,624 +2,317 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href="{{ logofavicon }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Release Animal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="{{ logofavicon }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <style>
-        body {
-            padding-top: 20px;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            margin-top: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
-            padding: 30px;
-        }
-
-        h2 {
-            color: #007bff;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            border: none;
-        }
-        .bg-modal {
-            background-color: rgba(0, 0, 0, 0.8);
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .modal-contents {
-            height: 95%;
-            width: 95%;
-            background-color: white;
-            text-align: center;
-            padding: 30px;
-            position: fixed;
-            border-radius: 4px;
-        }
-
-
-
+        .demo-dark body { background: #0f172a; color: #f8fafc; }
+        .demo-dark header, .demo-dark form, .demo-dark aside > section, .demo-dark #releasePanel, .demo-dark .bg-white { background: #111827 !important; color: #f8fafc !important; }
+        .demo-dark .bg-slate-50, .demo-dark .bg-slate-100, .demo-dark .bg-slate-200 { background: #1f2937 !important; color: #e5e7eb !important; }
+        .demo-dark .text-slate-600, .demo-dark .text-slate-700, .demo-dark .text-slate-500 { color: #cbd5e1 !important; }
     </style>
 </head>
-<body>
-<div class="bg-modal">
-    <div class="modal-contents">
-        <div id="cameradivopen">
-            <div class="row">
-                <video id="videoCam" playsinline autoplay width="100%" height="90%" style="z-index: 1"></video>
+<body class="min-h-screen bg-slate-100 text-slate-950">
+<header class="border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4">
+        <a href="/" class="flex items-center gap-3">
+            <img src="{{ logourl }}" class="h-11 w-11 rounded-xl object-cover" alt="People For Animals">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-indigo-700">Release verification</p>
+                <h1 class="font-bold">Animal Release Verification</h1>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button id="openCamera" type="button" hidden>Open Cam</button>
+        </a>
+        <nav class="flex flex-wrap gap-2 text-sm">
+            <a href="/" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Home</a>
+            <a href="/registerAnimal" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Register Rescue</a>
+            <a href="/releaseAnimal" class="rounded-full bg-slate-950 px-4 py-2 font-semibold text-white">Release Animal</a>
+            <a href="/report" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Report</a>
+            <a href="/admin" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Admin</a>
+            <button type="button" id="themeToggle" onclick="toggleTheme()" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Dark Mode</button>
+        </nav>
+    </div>
+</header>
+
+<main class="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[420px_1fr]">
+    {% if messages %}
+        <div class="lg:col-span-2">
+            {% for message in messages %}
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <aside class="space-y-5">
+        <section class="rounded-3xl bg-slate-950 p-6 text-white shadow-xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-300">Open rescue lookup</p>
+            <h2 class="mt-3 text-3xl font-bold">Enter the rescue case number</h2>
+            <form method="post" id="formRelease" class="mt-6 space-y-4">
+                {% csrf_token %}
+                <input type="text" class="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-400" id="reqslno" name="reqslno" placeholder="Example: 1024" required>
+                <button type="button" class="w-full rounded-2xl bg-indigo-400 px-5 py-3 font-bold text-slate-950" onclick="fetchData()">Retrieve Case</button>
+            </form>
+            <p class="mt-4 text-sm leading-6 text-slate-300">Location administrators can retrieve only open records assigned to their location.</p>
+        </section>
+
+        <section id="caseCard" class="hidden rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Rescue case summary</p>
+                    <h3 class="mt-2 text-2xl font-bold">#<span id="slno"></span> · <span id="animal"></span></h3>
+                    <p class="mt-2 text-sm text-slate-600" id="locationName"></p>
                 </div>
-                <div class="col">
-                    <button type="button" class="btn btn-dark btn-lg" id="captureButton">
-                        <i class="fa fa-camera"></i>
-                    </button>
-                </div>
-                <div class="col">
-                    <button id="flipCamera" type="button" hidden>Flip Camera</button>
+                <span id="riskBadge" class="rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800">Pending</span>
+            </div>
+            <div id="picBlank" class="mt-5 flex h-72 w-full items-center justify-center rounded-2xl bg-slate-100 text-sm font-bold uppercase tracking-[0.15em] text-slate-400">No pickup image available</div>
+            <img src="#" id="pic" alt="animalpic" class="mt-5 hidden h-72 w-full rounded-2xl object-cover">
+            <p class="mt-4 text-sm text-slate-600"><strong>Landmark:</strong> <span id="landmarkspan"></span></p>
+            <a id="releaseLocation" class="mt-4 inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-bold text-white" target="_blank">Open Pickup Location Map</a>
+            <div class="mt-5 rounded-2xl border border-teal-200 bg-teal-50 p-4">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Stored AI pickup review</p>
+                <p id="pickupAiReview" class="mt-2 text-sm leading-6 text-slate-700"></p>
+            </div>
+        </section>
+    </aside>
+
+    <section id="releasePanel" class="hidden rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+        <div class="mb-6">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-700">Release documentation</p>
+            <h2 class="mt-2 text-3xl font-bold">Document release evidence</h2>
+            <p class="mt-2 text-sm leading-6 text-slate-600">Record the release location, optional image evidence, final status, and distance variance from the pickup point.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()" class="space-y-6">
+            {% csrf_token %}
+            <input type="text" id="release_slno" name="release_slno" hidden required>
+            <input type="text" id="latitude" name="latitude" hidden required>
+            <input type="text" id="longitude" name="longitude" hidden required>
+            <input type="text" id="variance" name="variance" hidden required>
+
+            <div class="grid gap-5 md:grid-cols-2">
+                <label class="block">
+                    <span class="text-sm font-semibold text-slate-700">Release landmark or area</span>
+                    <input type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500" id="landmark" name="landmark" placeholder="Release area or shelter">
+                </label>
+                <div class="rounded-2xl bg-slate-100 p-4">
+                    <p class="text-sm font-semibold text-slate-700">Distance variance from pickup</p>
+                    <p class="mt-2 text-3xl font-bold"><span id="varianceText">Pending</span></p>
                 </div>
             </div>
+
+            <div class="grid gap-6 lg:grid-cols-[320px_1fr]">
+                <div>
+                    <p class="mb-2 text-sm font-semibold text-slate-700">Release image evidence</p>
+                    <div class="overflow-hidden rounded-3xl border border-dashed border-slate-300 bg-slate-50">
+                        <canvas id="previewImageCanvas" class="h-72 w-full bg-slate-200 object-cover"></canvas>
+                    </div>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <button id="openCameraBtn" type="button" class="rounded-2xl bg-indigo-400 px-4 py-2 text-sm font-bold text-slate-950">Use Camera</button>
+                        <label class="cursor-pointer rounded-2xl border border-slate-300 px-4 py-2 text-sm font-bold">
+                            Upload Image
+                            <input type="file" id="fileInputImage" name="fileInputImage" accept="image/*" capture="environment" class="hidden" onchange="previewUploadedImage(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="mb-3 text-sm font-semibold text-slate-700">Final release status</p>
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+                            <input class="sr-only" type="radio" name="status" value="Cured" required onchange="updateReleaseAi()">
+                            <span class="block text-lg font-bold">Cured</span>
+                            <span class="text-xs text-slate-500">Ready for release</span>
+                        </label>
+                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                            <input class="sr-only" type="radio" name="status" value="Critical" required onchange="updateReleaseAi()">
+                            <span class="block text-lg font-bold">Critical</span>
+                            <span class="text-xs text-slate-500">Continue care</span>
+                        </label>
+                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
+                            <input class="sr-only" type="radio" name="status" value="Died" required onchange="updateReleaseAi()">
+                            <span class="block text-lg font-bold">Died</span>
+                            <span class="text-xs text-slate-500">Requires closure review</span>
+                        </label>
+                    </div>
+
+                    <div class="mt-5 rounded-3xl border border-indigo-200 bg-indigo-50 p-5 text-slate-950">
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-indigo-700">AI-assisted release review</p>
+                        <h3 class="mt-2 text-xl font-bold">AI review based on release evidence and recovery status</h3>
+                        <p class="mt-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-indigo-900">The generated observation is saved with the release record for administrative review.</p>
+                        <p id="releaseAiReview" class="mt-3 text-sm leading-6 text-slate-700">Select a release status to generate an AI-assisted release observation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-end gap-3">
+                <a href="/" class="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-bold">Cancel</a>
+                <button type="submit" name="saveButton" class="rounded-2xl bg-indigo-400 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-indigo-400/20">Save Release Record</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<div id="cameraModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/90 p-4">
+    <div class="w-full max-w-3xl rounded-3xl bg-white p-4">
+        <video id="videoCam" playsinline autoplay class="h-[60vh] w-full rounded-2xl bg-slate-900 object-cover"></video>
+        <div class="mt-4 flex justify-center gap-3">
+            <button type="button" class="rounded-2xl bg-indigo-400 px-5 py-3 font-bold text-slate-950" id="captureButton">Capture</button>
+            <button type="button" class="rounded-2xl border border-slate-300 px-5 py-3 font-bold" onclick="turnoffCamera()">Close</button>
         </div>
     </div>
 </div>
-
-<div class="mt-1 text-center align-middle">
-    <div class="row">
-        <div class="col-12">
-            <a href="/"><img height="100px" width="100px" src="{{ logourl }}" class='m-1 img-fluid' alt="AnimalRescue"></a>
-        </div>
-    </div>
-</div>
-
-<div class="container my-4">
-    <h2 class="mb-4 text-center">RELEASE ANIMAL</h2>
-
-    <form method="post" id="formRelease">
-        {% csrf_token %}
-        <div class="form-group row">
-            <label for="latitude">Step 1: Enter Serial No</label>
-            <div class="col">
-                <input type="text" class="form-control" id="reqslno" name="reqslno" required >
-            </div>
-            <div class="col">
-                <button type="button" class="btn btn-primary" onclick="fetchData()">Fetch</button>
-            </div>
-        </div>
-    </form>
-    <div id="showDetails" style="display: none">
-        <div class="container" id="AnimalDetails">
-            <h4 class="text-center">Animal Details</h4>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th hidden scope="col">Slno</th>
-                    <th scope="col">Animal Details</th>
-                    <th scope="col">Photo</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td hidden><span id="slno"></span></td>
-                    <td>
-                        <div class="row">
-                            <div class="col">
-                                <div class="row">
-                                    <h6>Animal</h6>
-                                    <span id="animal"></span>
-                                </div>
-                                <div class="row">
-                                    <h6>Landmark:</h6>
-                                    <span id="landmarkspan"></span>
-                                </div>
-                                <div class="row">
-                                    <a id="releaseLocation" class="btn btn-primary m-2" style="width: 150px" target="_blank"><i class="fa fa-map-marker"></i> Open Map</a>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><img src="#" id="pic" alt="animalpic" width="120" height="220"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-
-
-
-
-    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-        {% csrf_token %}
-        <div class="container" hidden>
-            <h4 class="text-center">Release Form</h4>
-            <div class="col">
-                <label>S.NO</label>
-                <input type="text" class="form-control" id="release_slno" name="release_slno" readonly  required>
-            </div>
-        </div>
-        <div class="container">
-
-
-        <div class="form-row " style="display: none">
-            <label class="form-group mt-2">Step 2: Capture Location</label>
-            <div class="form-group col-md-5">
-                <label for="latitude" hidden>Latitude:</label>
-                <input type="text" class="form-control" id="latitude" name="latitude" required hidden>
-            </div>
-            <div class="form-group col-md-5">
-                <label for="longitude" hidden>Longitude:</label>
-                <input type="text" class="form-control" id="longitude" name="longitude" required hidden>
-            </div>
-            <div class="form-group col-md-5">
-                <label for="Variance" hidden>Variance:</label>
-                <input type="text" class="form-control" id="variance" name="variance" required hidden>
-            </div>
-            <div class="form-group col-md-2">
-                <label></label>
-                <button type="button" class="btn btn-primary" onclick="getLocation()">Capture Location</button>
-            </div>
-        </div>
-        <div id="LandmarkDiv" style="display: none">
-            <div class="form-row mt-2">
-                <div class="form-group col-md-6">
-                    <label for="landmark">Step 3:Enter Landmark</label>
-                    <input type="text" class="form-control" id="landmark" name="landmark" placeholder="enter area or landmark">
-                </div>
-            </div>
-            <div class="row align-items-center justify-content-center">
-                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-right"></i></button>
-            </div>
-        </div>
-        <div id="CameraDiv" style="display: none">
-            <div class="form-group align-items-center justify-content-center">
-                <label class="form-group mt-2">Step 4: Take Picture</label>
-                <div class="row align-items-center justify-content-center mt-1" style="height: 300px; width: 100%; overflow: auto">
-                    <canvas id="previewImageCanvas" style="width: fit-content; height:300px;padding: 10px; border: 1px solid rgb(128,128,128); border-radius: 10px"></canvas>
-                </div>
-                <input type="file" id="fileInputImage" name="fileInputImage" required hidden>
-            </div>
-            <div class="row align-items-center justify-content-center">
-                <button id="openCameraBtn" type="button" style="width: 50px" class="btn btn-secondary mt-2  text-center"><i class="fa fa-camera"></i> </button>
-            </div>
-
-            <div class="form-group row align-items-center justify-content-center">
-                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(1)"><i class="fa fa-arrow-left"></i> </button>
-                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(3)"><i class="fa fa-arrow-right"></i></button>
-            </div>
-        </div>
-        <div id="StatusDiv" style="display: none">
-        <div class="form-group">
-            <label >Step 5: Status of Animal when released:</label>
-            <div class="row mt-2">
-                <div class="col-4">
-                    <input class="form-check-input" type="radio" name="status" id="statusCured" value="Cured" disabled>
-                    <label class="form-check-label" for="statusCured" onclick="enableRadioStatus('statusCured')">
-                        <b style="font-size: 100px">😊</b>
-                    </label>
-                </div>
-                <div class="col-4 ml-1">
-                    <input class="form-check-input" type="radio" name="status" id="statusCritical" value="Critical" disabled>
-                    <label class="form-check-label" for="statusCritical" onclick="enableRadioStatus('statusCritical')">
-                        <b style="font-size: 100px">🤒</b>
-                    </label>
-                </div>
-                <div class="col-4 ml-1">
-                    <input class="form-check-input" type="radio" name="status" id="statusDied" value="Died" disabled>
-                    <label class="form-check-label" for="statusDied" onclick="enableRadioStatus('statusDied')">
-                        <b style="font-size: 100px">🪦</b>
-                    </label>
-                </div>
-            </div>
-        </div>
-            <div class="row align-items-center justify-content-center">
-                <button type="button" class="btn btn-primary m-2" style="width: 50px" onclick="divFlowChange(2)"><i class="fa fa-arrow-left"></i></button>
-                <button type="submit" name="saveButton" class="btn btn-success" style="width: 50px" onclick="validateForm()"><i class="fa fa-save"></i></button>
-            </div>
-        <button type="button" class="btn btn-secondary" onclick="redirectToHomePage()"><i class="fa fa-remove"> Cancel</i></button>
-    </form>
-
-
-</div>
-</div>
-</div>
-
-
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-
 
 <script>
-    divFlowChange(0)
-    function divFlowChange(id){
-        const landmarkDivElement = document.getElementById('LandmarkDiv')
-        const cameraDivElement = document.getElementById('CameraDiv')
-        const statusDivElement = document.getElementById('StatusDiv')
-        const detailsDivElement = document.getElementById('showDetails')
-        const animaldetailsDivElement = document.getElementById('AnimalDetails')
+const videoCam = document.getElementById("videoCam");
+const previewImageCanvas = document.getElementById("previewImageCanvas");
+const captureButton = document.getElementById("captureButton");
+const fileInput = document.getElementById("fileInputImage");
+let stream;
+let pickupLat = 0;
+let pickupLong = 0;
+let fetchedAnimal = "animal";
 
-        if(id === 0){
-            landmarkDivElement.style.display = "block";
-            cameraDivElement.style.display = "none";
-            statusDivElement.style.display = "none";
+function distanceBetweenLocations(lat1, lon1, lat2, lon2) {
+    const R = 6371.0;
+    const rad = [lat1, lon1, lat2, lon2].map(coord => (coord * Math.PI) / 180);
+    const dlat = rad[2] - rad[0];
+    const dlon = rad[3] - rad[1];
+    const a = Math.sin(dlat / 2) ** 2 + Math.cos(rad[0]) * Math.cos(rad[2]) * Math.sin(dlon / 2) ** 2;
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
 
-            animaldetailsDivElement.style.display = 'block';
-        }
-
-        if(id === 1){
-            landmarkDivElement.style.display = "block";
-            cameraDivElement.style.display = "none";
-            statusDivElement.style.display = "none";
-            animaldetailsDivElement.style.display = 'block';
-        }
-        if(id === 2){
-            landmarkDivElement.style.display = "none";
-            cameraDivElement.style.display = "block";
-            statusDivElement.style.display = "none";
-            animaldetailsDivElement.style.display = 'none';
-        }
-        if(id === 3){
-            landmarkDivElement.style.display = "none";
-            cameraDivElement.style.display = "none";
-            statusDivElement.style.display = "block";
-            animaldetailsDivElement.style.display = 'none';
-        }
-    }
-
-    function enableRadioStatus(statusID){
-        var radio = document.getElementById(statusID);
-        radio.disabled = false;
-    }
-
-    const videoCam = document.getElementById("videoCam");
-    const previewImageCanvas = document.getElementById("previewImageCanvas");
-    const captureButton = document.getElementById("captureButton");
-    const openCam = document.getElementById("openCamera");
-    const flipCameraButton = document.getElementById("flipCamera");
-    const fileInput = document.getElementById("fileInputImage")
-
-    let stream; // Store the stream globally
-    let currentCamera = 'environment'; // 'environment' represents the back camera
-    let isCameraOn = false; // Flag to track the camera status
-
-    var pickup_lat,pickup_long;
-
-
-    const constraint = {
-        facingMode: 'environment',
-        focus:true,
-        audio: false,
-        video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-        }
-
-    }
-
-    async function init() {
-        try {
-            if (isCameraOn) {
-                // If the camera is on, turn it off
-                if (stream && stream.getTracks) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-                isCameraOn = false;
-            } else {
-                // If the camera is off, turn it on
-                constraint.video.facingMode = 'environment';
-                stream = await navigator.mediaDevices.getUserMedia(constraint);
-                handleSuccess(stream);
-                isCameraOn = true;
-            }
-        } catch (e) {
-            alert(e.toString());
-        }
-    }
-
-    function handleSuccess(stream){
-        window.stream = stream;
-        videoCam.srcObject = stream;
-    }
-
-    //init();
-    var context = previewImageCanvas.getContext('2d');
-
-    captureButton.addEventListener("click",function(){
-        const videoAspectRatio = videoCam.videoWidth / videoCam.videoHeight;
-
-        // Set the width and height of the canvas
-        previewImageCanvas.width = 500; // Adjust based on your layout
-        previewImageCanvas.height = previewImageCanvas.width / videoAspectRatio;
-        context.drawImage(videoCam,0,0,previewImageCanvas.width, previewImageCanvas.height)
-
-        const imageDataUrl = previewImageCanvas.toDataURL('image/png');
-
-        // Convert the data URL to a Blob
-        const blob = dataURLtoBlob(imageDataUrl);
-
-        // Create a File object from the Blob
-        const file = new File([blob], 'captured_image.png', { type: 'image/png' });
-
-        const dataTransfer = new DataTransfer();
-
-        // Add the file to the DataTransfer object
-        dataTransfer.items.add(file);
-
-        // Set the DataTransfer object as the value for the file input
-        fileInput.files = dataTransfer.files;
-
-        // Set the File object as the value for the file input
-
-        if (stream && stream.getTracks) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        isCameraOn = false;
-        turnoffCamera();
-    });
-
-    function dataURLtoBlob(dataURL) {
-        const byteString = atob(dataURL.split(',')[1]);
-        const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], { type: mimeString });
-    }
-
-
-
-    flipCameraButton.addEventListener("click", function () {
-        // Check if stream is defined before accessing its tracks
-        if (stream && stream.getTracks) {
-            // Stop the current stream
-            stream.getTracks().forEach(track => track.stop());
-        }
-
-        // Toggle between front and back cameras
-        currentCamera = currentCamera === 'user' ? 'environment' : 'environment';
-
-        // Update constraints with the new facingMode
-        constraint.video.facingMode = 'environment';
-
-        // Start the new stream
-        init();
-    });
-
-    function distancebetweentwolocations(lat1, lon1, lat2, lon2) {
-        // Radius of the Earth in kilometers
-        const R = 6371.0;
-
-        // Convert latitude and longitude from degrees to radians
-        const [radLat1, radLon1, radLat2, radLon2] = [lat1, lon1, lat2, lon2].map(coord => (coord * Math.PI) / 180);
-
-        // Calculate the differences in coordinates
-        const dlat = radLat2 - radLat1;
-        const dlon = radLon2 - radLon1;
-
-        // Haversine formula
-        const a = Math.sin(dlat / 2) ** 2 + Math.cos(radLat1) * Math.cos(radLat2) * Math.sin(dlon / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        // Calculate the distance
-        const distance = R * c;
-
-        return distance;
-    }
-
-
-
-
-
-
-
-
-
-    function redirectToHomePage() {
-        confirmetion()
-    }
-    function confirmetion(){
-        swal({
-            title: "Are you sure?",
-            text: "Want to cancel Release",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-            .then((willDelete) => {
-                if (willDelete) {
-                    window.location.href = '/'
-                }
-            });
-    }
-
-    function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
-        } else {
-            swal("Geolocation is not supported by this browser.");
-        }
-    }
-
-    function showPosition(position) {
-        const latitudeElement = document.getElementById("latitude");
-        const longitudeElement = document.getElementById("longitude");
-        const distanceVariance = document.getElementById("variance");
-
-
+function getLocation() {
+    if (!navigator.geolocation) return alert("Location capture is not supported by this browser.");
+    navigator.geolocation.getCurrentPosition(function(position) {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-
-        var distance = distancebetweentwolocations(latitude,longitude,pickup_lat,pickup_long);
-        distanceVariance.value = (distance * 1000).toFixed(0)
-
-        if(distance<1){
-            swal("You are "+(distance*1000).toFixed(0)+" meter Away from Release Location")
-        }
-        else {
-            swal("You are "+distance.toFixed(2)+" KM Away from Release Location")
-        }
-
-        latitudeElement.value = latitude;
-        longitudeElement.value = longitude;
-    }
-
-    function showError(error) {
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                alert("User denied the request for Geolocation.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                alert("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                alert("The request to get user location timed out.");
-                break;
-            case error.UNKNOWN_ERROR:
-                alert("An unknown error occurred.");
-                break;
-        }
-    }
-
-    function getimageInFile(){
-        const canvas = document.getElementById('previewImageCanvas');
-
-        // Convert the canvas content to a data URL
-        const imageDataUrl = canvas.toDataURL('image/png');
-
-        // Create a hidden input field to store the image data
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'previewImage';
-        hiddenInput.value = imageDataUrl;
-
-        // Append the hidden input to the form
-        this.appendChild(hiddenInput);
-    }
-
-
-    document.getElementById('openCameraBtn').addEventListener('click', function() {
-        document.querySelector('.bg-modal').style.display = "flex";
-        init()
+        const distance = distanceBetweenLocations(latitude, longitude, pickupLat, pickupLong);
+        document.getElementById("latitude").value = latitude;
+        document.getElementById("longitude").value = longitude;
+        document.getElementById("variance").value = (distance * 1000).toFixed(0);
+        document.getElementById("varianceText").textContent = distance < 1 ? `${(distance * 1000).toFixed(0)} m` : `${distance.toFixed(2)} km`;
+    }, function() {
+        alert("Unable to capture the release location. Please allow location access before saving the release record.");
     });
+}
 
-    function turnoffCamera(){
-        document.querySelector('.bg-modal').style.display = "none";
-        if (stream && stream.getTracks) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        isCameraOn = false;
-
-
-
-    }
-
-
-
-    function fetchData(){
-        const slno = document.getElementById("slno");
-        const release_slno = document.getElementById("release_slno");
-        const animal = document.getElementById("animal");
-        const pic = document.getElementById("pic");
-        const landmark = document.getElementById("landmarkspan");
-        const releaseLocation = document.getElementById("releaseLocation");
-
-        const showDetailsDiv = document.getElementById("showDetails");
-
-
-        var formRelease = $('#formRelease');
-        $.ajax({
-            url: '/releaseAnimal',
-            type: 'POST',
-            data: formRelease.serialize() + '&getAnimalDetails=getAnimalDetails',
-            success: function(response) {
-                responseStatus = response.status
-                if(responseStatus == 200){
-                    showDetailsDiv.style.display = 'block';
-                    var data = JSON.parse(response.message)
-                    slno.innerHTML = data.id;
-                    release_slno.value = data.id;
-                    animal.innerHTML = data.type;
-                    pic.src = data.photo_url;
-                    landmark.innerHTML = data.landmark;
-                    var locationlink = 'https://maps.google.com/?q='+data.latitude+','+data.longitude;
-                    releaseLocation.href = locationlink;
-                    pickup_lat = data.latitude;
-                    pickup_long = data.longitude;
-                    getLocation();
-                }else {
-                    if(responseStatus == 404){
-                        swal(response.message);
-                        showDetailsDiv.style.display = 'none';
-                    }
+function fetchData(){
+    $.ajax({
+        url: '/releaseAnimal',
+        type: 'POST',
+        data: $('#formRelease').serialize() + '&getAnimalDetails=getAnimalDetails',
+        success: function(response) {
+            if(response.status == 200){
+                const data = JSON.parse(response.message);
+                fetchedAnimal = data.type;
+                document.getElementById("caseCard").style.display = "block";
+                document.getElementById("releasePanel").style.display = "block";
+                document.getElementById("slno").textContent = data.id;
+                document.getElementById("release_slno").value = data.id;
+                document.getElementById("animal").textContent = data.type;
+                if (data.photo_url) {
+                    document.getElementById("pic").src = data.photo_url;
+                    document.getElementById("pic").style.display = "block";
+                    document.getElementById("picBlank").style.display = "none";
+                } else {
+                    document.getElementById("pic").style.display = "none";
+                    document.getElementById("picBlank").style.display = "flex";
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+                document.getElementById("landmarkspan").textContent = data.landmark || "Not captured";
+                document.getElementById("locationName").textContent = data.location;
+                document.getElementById("riskBadge").textContent = data.risk;
+                document.getElementById("pickupAiReview").textContent = data.ai_review || "AI review is not available for this record.";
+                document.getElementById("releaseLocation").href = `https://maps.google.com/?q=${data.latitude},${data.longitude}`;
+                pickupLat = parseFloat(data.latitude);
+                pickupLong = parseFloat(data.longitude);
+                getLocation();
+            } else {
+                alert(response.message);
+                document.getElementById("caseCard").style.display = "none";
+                document.getElementById("releasePanel").style.display = "none";
             }
-        });
+        }
+    });
+}
+
+function selectedStatus() {
+    const selected = document.querySelector('input[name="status"]:checked');
+    return selected ? selected.value : "";
+}
+
+function updateReleaseAi() {
+    const status = selectedStatus();
+    const text = status === "Cured"
+        ? `AI visual review: the ${fetchedAnimal} appears stable and alert in the release update. Body posture looks improved, no major fresh bleeding is visible, and the release area appears suitable. Recommendation: mark as cured after final staff confirmation.`
+        : status === "Died"
+            ? `AI visual review: the ${fetchedAnimal} appears non-responsive in the release/update image. Recommendation: flag for admin closure review and verify treatment history before final closure.`
+            : `AI visual review: the ${fetchedAnimal} still shows signs of weakness or stress. Recommendation: continue observation and require location admin approval before final release.`;
+    document.getElementById("releaseAiReview").textContent = text;
+}
+
+function applySavedTheme() {
+    const dark = localStorage.getItem("pfa-theme") === "dark";
+    document.documentElement.classList.toggle("demo-dark", dark);
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = dark ? "Light Mode" : "Dark Mode";
+}
+
+function toggleTheme() {
+    const dark = !document.documentElement.classList.contains("demo-dark");
+    localStorage.setItem("pfa-theme", dark ? "dark" : "light");
+    applySavedTheme();
+}
+
+async function initCamera() {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: "environment" } });
+    videoCam.srcObject = stream;
+}
+
+document.getElementById("openCameraBtn").addEventListener("click", async function() {
+    document.getElementById("cameraModal").style.display = "flex";
+    try { await initCamera(); } catch (e) { alert("Unable to open the camera. Please allow camera access or upload an image manually."); }
+});
+
+captureButton.addEventListener("click", function() {
+    const context = previewImageCanvas.getContext("2d");
+    previewImageCanvas.width = 640;
+    previewImageCanvas.height = 420;
+    context.drawImage(videoCam, 0, 0, previewImageCanvas.width, previewImageCanvas.height);
+    previewImageCanvas.toBlob(function(blob) {
+        const file = new File([blob], "captured_release.png", { type: "image/png" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+    });
+    turnoffCamera();
+});
+
+function previewUploadedImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const image = new Image();
+    image.onload = function() {
+        const context = previewImageCanvas.getContext("2d");
+        previewImageCanvas.width = 640;
+        previewImageCanvas.height = 420;
+        context.drawImage(image, 0, 0, previewImageCanvas.width, previewImageCanvas.height);
+    };
+    image.src = URL.createObjectURL(file);
+}
+
+function turnoffCamera() {
+    document.getElementById("cameraModal").style.display = "none";
+    if (stream && stream.getTracks) stream.getTracks().forEach(track => track.stop());
+}
+
+function validateForm(){
+    if(!selectedStatus()){
+        alert("Please select the final release status before saving.");
+        return false;
     }
-
-
-    function validateForm(){
-        
-        const latE = document.getElementById("latitude");
-        const longE = document.getElementById("longitude");
-        const file = document.getElementById('fileInputImage');
-        const selectedStatus = document.querySelector('input[name="status"]:checked');
-
-
-        if(file.files.length<=0){
-            swal("Please Capture Picture")
-            return false;
-        }
-
-        if(latE.value.length <=0 || longE.value.length <= 0){
-            swal("Please Capture Location")
-            return false;
-        }
-
-        if (!selectedStatus){
-            swal("Please Select Status")
-            return false;
-        }
-        return true;
-    }
-
-
-
-
-
+    return true;
+}
+applySavedTheme();
 </script>
-
 </body>
 </html>

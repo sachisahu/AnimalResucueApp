@@ -22,7 +22,7 @@ def userLogin(request):
                 login(request, user)
                 return redirect('/')
             else:
-                messages.info(request,'Invalid Credentials')
+                messages.info(request, 'The user ID or password you entered is incorrect.')
                 return render(request, "login.html",context)
 
 
@@ -44,4 +44,4 @@ def logOutUser(request):
         logout(request)
         return redirect('/login')
     else:
-        return HttpResponse('Unable to Perform the operation.')
+        return HttpResponse('The logout request could not be completed.')

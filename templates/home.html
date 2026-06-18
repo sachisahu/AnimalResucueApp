@@ -2,110 +2,140 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People For Animals | Rescue Console</title>
     <link rel="icon" href="{{ logofavicon }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/fontawesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .demo-dark body { background: #0f172a; color: #f8fafc; }
+        .demo-dark header, .demo-dark section, .demo-dark .bg-white, .demo-dark .bg-slate-100 { background: #111827 !important; color: #f8fafc !important; }
+        .demo-dark .bg-slate-50, .demo-dark .bg-slate-200 { background: #1f2937 !important; color: #e5e7eb !important; }
+        .demo-dark .text-slate-600, .demo-dark .text-slate-700, .demo-dark .text-slate-500 { color: #cbd5e1 !important; }
+    </style>
 </head>
-<style>
-    .logoutButton {
-        position: fixed;
-        top: 0;
-        right: 0;
-        margin: 30px;
-        /* Adjust the margin as needed */
-    }
+<body class="min-h-screen bg-slate-100 text-slate-950">
+<div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#ccfbf1,transparent_35%),linear-gradient(135deg,#f8fafc,#ecfeff_45%,#f1f5f9)]"></div>
 
-    /* Style for the Logout button */
-
-</style>
-<body>
-<div class="container mt-5 text-center align-middle">
-    <div class="row">
-        <div class="col-12">
-            <a href="/"><img
-                    src="{{ logourl}}"
-                    class='m-2 img-fluid' alt="AssistEd"></a>
-
+<header class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+    <a href="/" class="flex items-center gap-3">
+        <img src="{{ logourl }}" class="h-12 w-12 rounded-xl object-cover ring-1 ring-white/20" alt="People For Animals">
+        <div>
+            <p class="text-sm uppercase tracking-[0.2em] text-teal-200">People For Animals</p>
+            <h1 class="text-xl font-semibold">Rescue Operations Console</h1>
         </div>
-        <div style="margin-bottom: 20px;">
+    </a>
+    <nav class="flex flex-wrap items-center gap-2 rounded-full border border-slate-200 bg-white p-1 text-sm shadow-sm">
+        <a href="/registerAnimal" class="rounded-full px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100">Register Rescue</a>
+        {% if can_view_operations %}
+            <a href="/releaseAnimal" class="rounded-full px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100">Release Animal</a>
+            <a href="/report" class="rounded-full px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100">Report</a>
+            <a href="/admin" class="rounded-full px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100">Admin</a>
+        {% endif %}
+        <button type="button" id="themeToggle" onclick="toggleTheme()" class="rounded-full px-4 py-2 font-semibold text-slate-700 hover:bg-slate-100">Dark Mode</button>
+    </nav>
+    <div class="flex items-center gap-3">
+        {% if request.user.is_authenticated %}
+            <span class="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 sm:inline">
+                {{ request.user.username }}{% if request.user.is_superuser %} · Super Admin{% elif rescuer.user_type == "location_admin" %} · Location Admin{% else %} · Normal User{% endif %}
+            </span>
+            <a href="/logout" class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950">Logout</a>
+        {% else %}
+            <a href="/login" class="rounded-full bg-teal-400 px-4 py-2 text-sm font-semibold text-slate-950">Login</a>
+        {% endif %}
+    </div>
+</header>
 
-            {% if request.user.is_authenticated %}
-            <button type="submit" style="width: 100px;color: #fff" onclick="location.href='/logout'" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">Logout</button>
-            {% else %}
-                <a href="/login"><button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">login</button></a>
-            {% endif %}
-
+<main class="mx-auto grid max-w-7xl gap-8 px-6 pb-12 lg:grid-cols-[1.1fr_0.9fr]">
+    <section class="rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl shadow-slate-200">
+        <div class="mb-8 max-w-2xl">
+            <p class="mb-3 text-sm font-medium uppercase tracking-[0.25em] text-teal-200">Location-wise animal rescue</p>
+            <h2 class="text-4xl font-bold leading-tight md:text-6xl">Field intake, release verification, and AI-assisted case review.</h2>
+            <p class="mt-5 text-base leading-7 text-slate-600">
+                A professional operations workflow for multi-city rescue teams. Super administrators can oversee every center, while location administrators manage only their assigned location.
+            </p>
         </div>
 
-
-    </div>
-    <div class="logoutButton">
-
-            <form action='/logout' method='POST'>
-                {% csrf_token %}
-
-            </form>
-
-
-    </div>
-
-    <div class="d-flex justify-content-center">
-
-        <div class="row">
-            <div class="col-sm">
-                <button type='submit' onclick="location.href='registerAnimal'" style='background:transparent; border:0px'>
-                    <div class="p-5 m-5"
-                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff;  height:150px; width:150px; background:#6495ED; border-radius:10px">
-                        <h3><i class="fa fa-plus" aria-hidden="true" style="font-size: 70px"></i></h3>
-                    </div>
-                </button>
+        <div class="grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm text-slate-500">Accessible cases</p>
+                <p class="mt-2 text-4xl font-bold">{{ total_rescues }}</p>
             </div>
-            <div class="col-sm">
-                <button type='submit' onclick="location.href='releaseAnimal'" style='background:transparent; border:0px'>
-                    <div class="p-5 m-5"
-                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:150px; background:#6082B6; border-radius:10px">
-                        <h3><i class="fa fa-minus" aria-hidden="true" style="font-size: 70px"></i></h3>
-                    </div>
-
-                </button>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm text-slate-500">Open rescue cases</p>
+                <p class="mt-2 text-4xl font-bold text-amber-300">{{ open_cases }}</p>
             </div>
-
-            <div class="col-sm">
-                <button type='submit' onclick="location.href='report'" style='background:transparent; border:0px'>
-                    <div class="p-5 m-5"
-                         style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:150px; background:#6F8FAF ; border-radius:10px">
-                        <h3><i class="fa fa-table" aria-hidden="true" style="font-size: 70px"></i></h3>
-                    </div>
-
-                </button>
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <p class="text-sm text-slate-500">Current access scope</p>
+                <p class="mt-3 text-lg font-semibold">{% if request.user.is_superuser %}All locations{% elif location %}{{ location.city|default:location.name }}{% else %}Login required{% endif %}</p>
             </div>
+        </div>
+    </section>
 
-            {% if request.user.is_superuser %}
-                <div class="col-sm">
-                    <button type='submit' onclick="location.href='admin'" style='background:transparent; border:0px'>
-                        <div class="p-5 m-5"
-                             style="box-shadow: 20px 20px 50px lightgrey;color: #fff; height:150px; width:150px; background:#6F8FAF ; border-radius:10px">
-                            <h3><i class="fa fa-user" aria-hidden="true" style="font-size: 70px"></i></h3>
-                        </div>
-
-                    </button>
+    <section class="grid content-start gap-4">
+        <a href="/registerAnimal" class="group rounded-3xl border border-white/10 bg-white p-6 text-slate-950 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Field operations</p>
+                    <h3 class="mt-3 text-2xl font-bold">Register Rescue</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Record location, animal details, condition status, and AI-assisted triage notes.</p>
                 </div>
-            {% endif %}
+                <span class="rounded-full bg-teal-100 px-4 py-2 font-bold text-teal-800">Start</span>
+            </div>
+        </a>
 
-        </div>
-    </div>
+        {% if can_view_operations %}
+        <a href="/releaseAnimal" class="group rounded-3xl border border-white/10 bg-slate-100 p-6 text-slate-950 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-700">Care and release</p>
+                    <h3 class="mt-3 text-2xl font-bold">Release Animal</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Retrieve an open case, document release evidence, and verify release-location variance.</p>
+                </div>
+                <span class="rounded-full bg-indigo-100 px-4 py-2 font-bold text-indigo-800">Update</span>
+            </div>
+        </a>
+        {% endif %}
 
+        {% if can_view_operations %}
+        <a href="/report" class="group rounded-3xl border border-white/10 bg-slate-100 p-6 text-slate-950 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-700">Administrative review</p>
+                    <h3 class="mt-3 text-2xl font-bold">Reports</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Review location-wise rescue records with map links, evidence status, and AI-generated observations.</p>
+                </div>
+                <span class="rounded-full bg-slate-200 px-4 py-2 font-bold text-slate-800">View</span>
+            </div>
+        </a>
+        {% endif %}
 
-
-<div style="margin-bottom: 20px;"> </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b4gt3Kl9r5fQphWu3k/pjC9ur3ktQOp6zfrY9WlU5xKRKMtCru8+3RFApi7hjIbb" crossorigin="anonymous"></script>
-
-
-
+        {% if can_view_operations %}
+        <a href="/admin" class="group rounded-3xl border border-teal-300/30 bg-teal-300 p-6 text-slate-950 shadow-xl transition hover:-translate-y-1 hover:shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-900">Administration</p>
+                    <h3 class="mt-3 text-2xl font-bold">{% if request.user.is_superuser %}Manage Locations{% else %}Manage Team{% endif %}</h3>
+                    <p class="mt-2 text-sm leading-6 text-teal-950">{% if request.user.is_superuser %}Configure centers, user access, animal categories, and location assignments.{% else %}Create field-rescue users for your assigned location.{% endif %}</p>
+                </div>
+                <span class="rounded-full bg-slate-950 px-4 py-2 font-bold text-white">Admin</span>
+            </div>
+        </a>
+        {% endif %}
+    </section>
+</main>
+<script>
+function applySavedTheme() {
+    const dark = localStorage.getItem("pfa-theme") === "dark";
+    document.documentElement.classList.toggle("demo-dark", dark);
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = dark ? "Light Mode" : "Dark Mode";
+}
+function toggleTheme() {
+    const dark = !document.documentElement.classList.contains("demo-dark");
+    localStorage.setItem("pfa-theme", dark ? "dark" : "light");
+    applySavedTheme();
+}
+applySavedTheme();
+</script>
 </body>
 </html>

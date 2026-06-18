@@ -2,166 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href={{ logofavicon }}>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/fontawesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration | People For Animals</title>
+    <link rel="icon" href="{{ logofavicon }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        .demo-dark body { background: #0f172a; color: #f8fafc; }
+        .demo-dark header, .demo-dark section, .demo-dark form, .demo-dark .bg-white { background: #111827 !important; color: #f8fafc !important; }
+        .demo-dark .bg-slate-50, .demo-dark .bg-slate-100 { background: #1f2937 !important; color: #e5e7eb !important; }
+        .demo-dark .text-slate-600, .demo-dark .text-slate-700, .demo-dark .text-slate-500 { color: #cbd5e1 !important; }
+    </style>
 </head>
-<style>
-    .logoutButton {
-        position: fixed;
-        top: 0;
-        right: 0;
-        margin: 30px;
-        /* Adjust the margin as needed */
-    }
-
-</style>
-<body>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<body class="min-h-screen bg-slate-100 text-slate-950">
 {% if messages %}
     {% for message in messages %}
-        <script>
-            swal("{{ message }} ");
-        </script>
+        <script>swal("{{ message }}");</script>
     {% endfor %}
 {% endif %}
 
-
-<div class="container mt-5 text-center align-middle">
-    <div class="row">
-        <div class="col-12">
-            <a href="/"><img
-                    src="{{ logourl}}"
-                    class='m-2 img-fluid' alt="AssistEd"></a>
-
-        </div>
-        <div style="margin-bottom: 20px;">
-
-            {% if request.user.is_authenticated %}
-                <button type="submit" style="width: 100px;color: #fff" onclick="location.href='/logout'" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">Logout</button>
-            {% else %}
-                <a href="/login"><button type="submit" style="width: 100px;color: #fff" class="btn btn-info rounded-pill ms-2 mt-2 mb-2">login</button></a>
-            {% endif %}
-
-        </div>
-
-
+<header class="border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4">
+        <a href="/" class="flex items-center gap-3">
+            <img src="{{ logourl}}" class="h-11 w-11 rounded-xl object-cover" alt="People For Animals">
+            <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-teal-700">{% if request.user.is_superuser %}Super admin{% else %}Location admin{% endif %}</p>
+                <h1 class="font-bold">{% if request.user.is_superuser %}Organization Control Center{% else %}Location Team Center{% endif %}</h1>
+            </div>
+        </a>
+        <nav class="flex flex-wrap gap-2 text-sm">
+            <a href="/" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Home</a>
+            <a href="/registerAnimal" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Register Rescue</a>
+            <a href="/releaseAnimal" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Release Animal</a>
+            <a href="/report" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Report</a>
+            <a href="/admin" class="rounded-full bg-slate-950 px-4 py-2 font-semibold text-white">Admin</a>
+            <button type="button" id="themeToggle" onclick="toggleTheme()" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Dark Mode</button>
+            <a href="/logout" class="rounded-full border border-slate-300 px-4 py-2 font-semibold">Logout</a>
+        </nav>
     </div>
-    <h2>ADMIN DASHBOARD</h2>
+</header>
 
+<main class="mx-auto max-w-7xl px-5 py-6">
+    <section class="mb-6 rounded-3xl bg-slate-950 p-6 text-white shadow-xl">
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-300">Role-based administration</p>
+        <h2 class="mt-2 text-3xl font-bold">{% if request.user.is_superuser %}Manage centers, administrators, field users, and animal categories{% else %}Manage field users for {{ location.name|default:"your assigned location" }}{% endif %}</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-300">{% if request.user.is_superuser %}Use this console to configure locations, assign access, and maintain the operational setup for every rescue center.{% else %}Location administrators can manage release activity, review reports, and create field users for their assigned location.{% endif %}</p>
+    </section>
 
-</div>
+    <div class="grid gap-6 lg:grid-cols-2">
+        {% if request.user.is_superuser %}
+        <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Locations</p>
+            <h3 class="mt-2 text-2xl font-bold">Add rescue location</h3>
+            <form method="post" class="mt-5 grid gap-4">
+                {% csrf_token %}
+                <input type="text" name="LocationName" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" placeholder="Example: Hyderabad Rescue Center" required>
+                <input type="text" name="LocationCity" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" placeholder="City or region">
+                <button type="submit" name="saveCreateLocationBtn" class="rounded-2xl bg-teal-500 px-5 py-3 font-bold text-slate-950">Create Location</button>
+            </form>
 
-
-
-
-<div class="container my-4 card p-2">
-    <div class="card-body">
-    <h5 class="mb-4 text-left">ADD NEW USER</h5>
-
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-row row form-group">
-            <div class="col-sm">
-                <label class="form-group">Enter Username
-                    <input type="text" name="UserNameCreateUser" class="form-text form-control" required>
-                </label>
+            <div class="mt-6 grid gap-3">
+                {% for loc in locations %}
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
+                        <div>
+                            <p class="font-bold">{{ loc.name }}</p>
+                            <p class="text-sm text-slate-500">{{ loc.city|default:"No city" }}</p>
+                        </div>
+                        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{% if loc.is_active %}Active{% else %}Inactive{% endif %}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-sm text-slate-500">No rescue locations have been configured yet.</p>
+                {% endfor %}
             </div>
-            <div class="col-sm">
-                <label class="form-group">Enter Password
-                    <input type="password" name="PasswordCreateUser" class="form-text form-control" required>
-                </label>
-            </div>
-            <div class="col-sm m-1">
-                <label class="form-group"> &nbsp;
-                    <button type="submit" name="saveCreateUserBtn" class="form-text form-control btn btn-primary"><i class="fa fa-plus"></i> Add </button>
-                </label>
-            </div>
+        </section>
+        {% endif %}
 
-        </div>
-    </form>
-</div>
-</div>
-
-<div class="container my-4 card p-2">
-    <div class="card-body">
-<h5 class="mb-4 text-left">UPDATE USER PASSWORD</h5>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-row row form-group">
-        <div class="col-sm">
-            <label class="form-group">Select Username
-                <select class="form-control" name="updatePasswordUsername" id="updatePasswordUsername">
-                <option value="0" disabled selected>Select</option>
-                    {% for user in users %}
-                        <option value="{{ user.userName }}">{{ user.userName }}</option>
+        <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-700">User access</p>
+            <h3 class="mt-2 text-2xl font-bold">{% if request.user.is_superuser %}Create user account{% else %}Create field-rescue user{% endif %}</h3>
+            <form method="post" enctype="multipart/form-data" class="mt-5 grid gap-4">
+                {% csrf_token %}
+                <input type="text" name="UserNameCreateUser" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="User name" required>
+                <input type="password" name="PasswordCreateUser" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Password" required>
+                {% if request.user.is_superuser %}
+                <select name="UserTypeCreateUser" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="location_admin">Location Administrator</option>
+                    <option value="normal">Field Rescue User</option>
+                </select>
+                <select name="UserLocationCreateUser" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Assign location later</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc.id }}">{{ loc.name }}</option>
                     {% endfor %}
                 </select>
-            </label>
-        </div>
-        <div class="col-sm">
-            <label class="form-group">Enter New Password
-                <input type="password" name="updatePasswordPassword" class="form-text form-control" required>
-            </label>
-        </div>
-        <div class="col-sm m-1">
-            <label class="form-group"> &nbsp;
-                <button type="submit" name="updateUserPasswordBtn" class="form-text form-control btn btn-primary" onclick="validateUpdatePasswordForm()"><i class="fa fa-refresh"></i> Update</button>
-            </label>
-        </div>
+                {% else %}
+                <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                    New accounts will be created as <strong>Field Rescue Users</strong> for <strong>{{ location.name|default:"your assigned location" }}</strong>.
+                </div>
+                {% endif %}
+                <button type="submit" name="saveCreateUserBtn" class="rounded-2xl bg-indigo-400 px-5 py-3 font-bold text-slate-950">Create Account</button>
+            </form>
+        </section>
 
+        {% if request.user.is_superuser %}
+        <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Location assignment</p>
+            <h3 class="mt-2 text-2xl font-bold">Assign user access to a location</h3>
+            <form method="post" class="mt-5 grid gap-4">
+                {% csrf_token %}
+                <select class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" name="assignLocationUsername" required>
+                    <option value="">Select a user account</option>
+                    {% for user in users %}
+                        <option value="{{ user.userName }}">{{ user.userName }}{% if user.location %} · {{ user.location.name }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+                <select class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" name="assignLocation" required>
+                    <option value="">Select a rescue location</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc.id }}">{{ loc.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="assignUserLocationBtn" class="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">Assign Access</button>
+            </form>
+        </section>
+        {% endif %}
+
+        <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">Security</p>
+            <h3 class="mt-2 text-2xl font-bold">Reset user password</h3>
+            <form method="post" enctype="multipart/form-data" class="mt-5 grid gap-4" onsubmit="return validateUpdatePasswordForm()">
+                {% csrf_token %}
+                <select class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-amber-500" name="updatePasswordUsername" id="updatePasswordUsername">
+                    <option value="0" disabled selected>Select a user account</option>
+                    {% for user in users %}
+                        <option value="{{ user.userName }}">{{ user.userName }} · {{ user.get_user_type_display }}</option>
+                    {% endfor %}
+                </select>
+                <input type="password" name="updatePasswordPassword" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-amber-500" placeholder="New password" required>
+                <button type="submit" name="updateUserPasswordBtn" class="rounded-2xl bg-amber-400 px-5 py-3 font-bold text-slate-950">Update Password</button>
+            </form>
+        </section>
+
+        {% if request.user.is_superuser %}
+        <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200 lg:col-span-2">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Animal classification</p>
+            <h3 class="mt-2 text-2xl font-bold">Add animal category</h3>
+            <form method="post" enctype="multipart/form-data" class="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_auto]">
+                {% csrf_token %}
+                <input type="text" name="AnimalNameUplode" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" placeholder="Animal category name" required>
+                <input type="file" name="AnimalPictureUplode" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500">
+                <button type="submit" name="uplodeAnimalPictureToListBtn" class="rounded-2xl bg-teal-500 px-5 py-3 font-bold text-slate-950">Save Category</button>
+            </form>
+        </section>
+        {% endif %}
     </div>
-</form>
-</div>
-</div>
-
-<div class="container my-4 card p-2">
-    <div class="card-body">
-        <h5 class="mb-4 text-left">ADD NEW ANIMAL TO LIST</h5>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-row row form-group">
-                <div class="col-sm">
-                    <label class="form-group">Enter Animal Display Name
-                        <input type="text" name="AnimalNameUplode" class="form-text form-control" required>
-                    </label>
-                </div>
-                <div class="col-sm">
-                    <label class="form-group">Uplode Animal Picture
-                        <input type="file" name="AnimalPictureUplode" class="form-text form-control" required>
-                    </label>
-                </div>
-                <div class="col-sm m-1">
-                    <label class="form-group"> &nbsp;
-                        <button type="submit" name="uplodeAnimalPictureToListBtn" class="form-text form-control btn btn-primary"><i class="fa fa-upload"></i> Uplode</button>
-                    </label>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-
-
-
-
-
-
+</main>
 
 <script>
-    function validateUpdatePasswordForm(){
-        const selectedUsername = document.getElementById("updatePasswordUsername")
-        if(selectedUsername.value == 0){
-            swal("Please Select Username")
-            return false;
-        }
-
-        return true;
+function applySavedTheme() {
+    const dark = localStorage.getItem("pfa-theme") === "dark";
+    document.documentElement.classList.toggle("demo-dark", dark);
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = dark ? "Light Mode" : "Dark Mode";
+}
+function toggleTheme() {
+    const dark = !document.documentElement.classList.contains("demo-dark");
+    localStorage.setItem("pfa-theme", dark ? "dark" : "light");
+    applySavedTheme();
+}
+function validateUpdatePasswordForm(){
+    const selectedUsername = document.getElementById("updatePasswordUsername");
+    if(selectedUsername.value == 0){
+        swal("Please select a user account before updating the password.");
+        return false;
     }
+    return true;
+}
+applySavedTheme();
 </script>
-
 </body>
 </html>

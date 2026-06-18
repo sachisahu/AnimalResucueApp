@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-7jcly(x*f36ftqfrk%+ptp!my*es@dt5c5v*dwl3cp*!=bbm+d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,12 +91,8 @@ WSGI_APPLICATION = 'AnimalResucueApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'AnimalRescueApp',
-        'HOST':'db-mysql-blr1-23172-do-user-16314120-0.c.db.ondigitalocean.com',
-        'PORT':'25060',
-        'USER':'doadmin',
-        'PASSWORD':'AVNS_BrOJ7BcbzucDh1DO4HL'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -165,5 +161,5 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
-logoFaviconUrl = "https://animalrescuesresources-space.blr1.cdn.digitaloceanspaces.com/resources/logo/icon.ico"
-logoUrl = "https://animalrescuesresources-space.blr1.cdn.digitaloceanspaces.com/resources/logo/logo.jpg"
+logoFaviconUrl = "https://upload.wikimedia.org/wikipedia/en/5/56/People_for_Animals_Official_Logo.png"
+logoUrl = "https://upload.wikimedia.org/wikipedia/en/5/56/People_for_Animals_Official_Logo.png"
