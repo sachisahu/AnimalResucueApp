@@ -2,7 +2,32 @@ from django.db import models
 
 
 # Create your models here.
-class RescueLocation(models.Model):
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
+class BaseModel(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    is_deleted = models.BooleanField(default=False)
+
+    objects = ActiveManager()
+    all_objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+    def delete(self, using=None, keep_parents=False):
+        self.is_deleted = True
+        self.save(update_fields=["is_deleted", "updated_at"])
+
+    def hard_delete(self, using=None, keep_parents=False):
+        return super().delete(using=using, keep_parents=keep_parents)
+
+
+class RescueLocation(BaseModel):
     name = models.CharField(max_length=120, unique=True)
     city = models.CharField(max_length=120, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -11,7 +36,7 @@ class RescueLocation(models.Model):
         return self.name
 
 
-class Rescuers(models.Model):
+class Rescuers(BaseModel):
     USER_TYPE_CHOICES = [
         ("normal", "Normal User"),
         ("location_admin", "Location Admin"),
@@ -35,7 +60,7 @@ class Rescuers(models.Model):
         return self.userName
 
 
-class Animal(models.Model):
+class Animal(BaseModel):
     animal = models.CharField(max_length=100, null=True)
     pic_url = models.CharField(max_length=1000,null=True)
 
@@ -43,7 +68,7 @@ class Animal(models.Model):
         return self.animal or "Animal"
 
 
-class AnimalRescued(models.Model):
+class AnimalRescued(BaseModel):
     location = models.ForeignKey(
         RescueLocation,
         on_delete=models.SET_NULL,

@@ -331,8 +331,12 @@ def admin(request):
         if 'uplodeAnimalPictureToListBtn' in request.POST:
             if not request.user.is_superuser:
                 return HttpResponse(ACCESS_DENIED_MESSAGE)
-            animalName = request.POST.get("AnimalNameUplode")
+            animalName = (request.POST.get("AnimalNameUplode") or "").strip()
             animalPicture = request.FILES.get('AnimalPictureUplode')
+
+            if Animal.objects.filter(animal__iexact=animalName).exists():
+                messages.info(request, 'This animal category already exists.')
+                return redirect('/admin')
 
             try:
                 animalPictureUrl = uploadResourcesToCloudflareR2("animalPics", animalPicture) if animalPicture else DEMO_PLACEHOLDER_IMAGE

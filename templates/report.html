@@ -205,6 +205,17 @@ function closeRemoveRecordPopup(){
     document.getElementById("removeModal").style.display = "none";
 }
 applySavedTheme();
+document.addEventListener("submit", function(event) {
+    const button = event.submitter;
+    if (!button || button.type !== "submit") return;
+    if (!button.dataset.originalText) {
+        button.dataset.originalText = button.textContent;
+    }
+    setTimeout(() => {
+        button.textContent = "Please wait...";
+        button.disabled = true;
+    }, 0);
+});
 </script>
 </body>
 </html>

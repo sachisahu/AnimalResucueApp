@@ -13,18 +13,16 @@ def userLogin(request):
         "logofavicon":settings.logoFaviconUrl
     }
     if request.method == 'POST':
-        if 'loginBtn' in request.POST:
-            userID = request.POST.get('userId')
-            userPass = request.POST.get('userpassword')
-            user = authenticate(request, username=userID, password=userPass)
+        userID = request.POST.get('userId')
+        userPass = request.POST.get('userpassword')
+        user = authenticate(request, username=userID, password=userPass)
 
-            if user is not None:
-                login(request, user)
-                return redirect('/')
-            else:
-                messages.info(request, 'The user ID or password you entered is incorrect.')
-                return render(request, "login.html",context)
-
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        else:
+            messages.info(request, 'The user ID or password you entered is incorrect.')
+            return render(request, "login.html",context)
 
     return render(request, "login.html",context)
 

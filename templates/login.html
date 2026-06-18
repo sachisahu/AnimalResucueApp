@@ -63,6 +63,15 @@ function togglePasswordVisibility() {
     const input = document.getElementById('passwordInput');
     input.type = input.type === 'password' ? 'text' : 'password';
 }
+document.addEventListener("submit", function(event) {
+    const button = event.submitter;
+    if (!button) return;
+    button.dataset.originalText = button.textContent;
+    setTimeout(() => {
+        button.textContent = "Please wait...";
+        button.disabled = true;
+    }, 0);
+});
 </script>
 </body>
 </html>
