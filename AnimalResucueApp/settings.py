@@ -17,6 +17,41 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def load_local_env(env_path):
+    if not env_path.exists():
+        return
+
+    lines = env_path.read_text(encoding='utf-8').splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index].strip()
+        index += 1
+
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip()
+
+        if value == '(':
+            collected = []
+            while index < len(lines):
+                next_line = lines[index].strip()
+                index += 1
+                if next_line == ')':
+                    break
+                collected.append(next_line)
+            value = ''.join(collected).strip()
+
+        value = value.strip().strip('"').strip("'")
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
+load_local_env(BASE_DIR / '.env')
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -86,6 +121,17 @@ WSGI_APPLICATION = 'AnimalResucueApp.wsgi.application'
 #         'PORT':'25060',
 #         'USER':'sahu',
 #         'PASSWORD':'AVNS_P84CetQ7qPBorl1-gHj'
+#     }
+# }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'pfa',
+#         'HOST':'pg-2a001833-sallubhoi01-a8e7.i.aivencloud.com',
+#         'PORT':'20470',
+#         'USER':'avnadmin',
+#         'PASSWORD':'AVNS_Xj4xQE-ol1eWfYjyQuF'
 #     }
 # }
 
@@ -159,6 +205,22 @@ AWS_LOCATION = 'resources'
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Cloudflare R2 image storage for new rescue uploads.
+# Keep credentials in environment variables:
+#   CLOUDFLARE_R2_ACCESS_KEY_ID
+#   CLOUDFLARE_R2_SECRET_ACCESS_KEY
+CLOUDFLARE_R2_ENDPOINT_URL = os.environ.get(
+    'CLOUDFLARE_R2_ENDPOINT_URL',
+    'https://223b9beadfcbec1aad420de245a03869.r2.cloudflarestorage.com',
+).rstrip('/')
+CLOUDFLARE_R2_BUCKET_NAME = os.environ.get('CLOUDFLARE_R2_BUCKET_NAME', 'pfa')
+CLOUDFLARE_R2_ACCESS_KEY_ID = os.environ.get('CLOUDFLARE_R2_ACCESS_KEY_ID', '')
+CLOUDFLARE_R2_SECRET_ACCESS_KEY = os.environ.get('CLOUDFLARE_R2_SECRET_ACCESS_KEY', '')
+CLOUDFLARE_R2_PUBLIC_BASE_URL = os.environ.get(
+    'CLOUDFLARE_R2_PUBLIC_BASE_URL',
+    f'{CLOUDFLARE_R2_ENDPOINT_URL}/{CLOUDFLARE_R2_BUCKET_NAME}',
+).rstrip('/')
 
 
 logoFaviconUrl = "https://upload.wikimedia.org/wikipedia/en/5/56/People_for_Animals_Official_Logo.png"

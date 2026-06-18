@@ -1,12 +1,13 @@
 import datetime
 import json
 import time
+import csv
 from  AnimalResucueApp import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
 from AnimalRes.models import Animal, AnimalRescued, Rescuers, RescueLocation
-from AnimalRes.utils import uploadResourcesToDigitalOcean, moveImages, generate_demo_ai_review
+from AnimalRes.utils import uploadResourcesToDigitalOcean, uploadResourcesToCloudflareR2, moveImages, generate_demo_ai_review
 from django.contrib.auth.models import User
 from django.contrib import messages
 
@@ -83,8 +84,8 @@ def registerAnimal(request):
     }
     if request.method == 'POST':
         if 'saveButton' in request.POST:
-            latitude = request.POST.get('latitude')
-            longitude = request.POST.get('longitude')
+            latitude = request.POST.get('latitude') or ""
+            longitude = request.POST.get('longitude') or ""
             landmark = request.POST.get('landmark')
             image = request.FILES.get('fileInputImage')
             animal = request.POST.get('animalType')
@@ -94,13 +95,14 @@ def registerAnimal(request):
             if animal == 'others':
                 animal = otherInput
 
-            picURLurl = DEMO_PLACEHOLDER_IMAGE
+            try:
+                picURLurl = uploadResourcesToCloudflareR2('pickupAnimal', image) if image else DEMO_PLACEHOLDER_IMAGE
+            except Exception as exc:
+                messages.info(request, f"Image upload failed: {exc}")
+                return redirect("/registerAnimal")
             selected_location = user_location
             if request.user.is_superuser:
                 selected_location = RescueLocation.objects.filter(id=request.POST.get("location")).first() or user_location
-
-            ai_review, ai_risk = generate_demo_ai_review(animal, status, landmark, "pickup")
-
 
             animalRes = AnimalRescued(
                 location=selected_location,
@@ -112,11 +114,9 @@ def registerAnimal(request):
                 pickup_animalPhoto=picURLurl,
                 animal=animal,
                 pickup_status=status,
-                ai_pickup_review=ai_review,
-                ai_risk_level=ai_risk,
             )
             animalRes.save()
-            messages.success(request, 'Rescue saved successfully. AI review comment has been added to the case.')
+            messages.success(request, 'Rescue case saved successfully.')
             return redirect("/registerAnimal")
 
     return render(request, "RegisterAnimal.html", context)
@@ -142,20 +142,18 @@ def releaseAnimal(request):
             landmark = request.POST.get('landmark')
             image = request.FILES.get('fileInputImage')
             status = request.POST.get('status')
-            variance = request.POST.get('variance')
+            variance = request.POST.get('variance') or ""
 
-            picURLurl = DEMO_PLACEHOLDER_IMAGE
+            try:
+                picURLurl = uploadResourcesToCloudflareR2('releaseAnimal', image) if image else DEMO_PLACEHOLDER_IMAGE
+            except Exception as exc:
+                messages.info(request, f"Image upload failed: {exc}")
+                return redirect('/releaseAnimal')
 
             updateRelaesedAnimal = scoped_rescues_for_user(request.user).filter(id=slno).first()
             if updateRelaesedAnimal is None:
                 messages.info(request, "No matching rescue record was found for your assigned location.")
                 return redirect('/releaseAnimal')
-            ai_review, ai_risk = generate_demo_ai_review(
-                updateRelaesedAnimal.animal,
-                status,
-                landmark,
-                "release",
-            )
             updateRelaesedAnimal.release_date = datetime.datetime.today()
             updateRelaesedAnimal.release_time = datetime.datetime.now()
             updateRelaesedAnimal.release_latitude = latitude
@@ -164,10 +162,8 @@ def releaseAnimal(request):
             updateRelaesedAnimal.release_status = status
             updateRelaesedAnimal.release_animalPhoto = picURLurl
             updateRelaesedAnimal.distance_variance = variance
-            updateRelaesedAnimal.ai_release_review = ai_review
-            updateRelaesedAnimal.ai_risk_level = ai_risk
             updateRelaesedAnimal.save()
-            messages.success(request, 'Release saved successfully. AI release review has been added to the case.')
+            messages.success(request, 'Release record saved successfully.')
 
             return redirect('/releaseAnimal')
 
@@ -184,8 +180,6 @@ def releaseAnimal(request):
                         'longitude': animalDetails.pickup_longitude,
                         'latitude': animalDetails.pickup_latitude,
                         'location': animalDetails.location.name if animalDetails.location else "Unassigned",
-                        'ai_review': animalDetails.ai_pickup_review or "",
-                        'risk': animalDetails.ai_risk_level or "Pending",
                     }
                     return JsonResponse({'message': json.dumps(animalData), 'status': 200})
                 else:
@@ -204,16 +198,58 @@ def report(request):
 
     # allResecues = AnimalRescued.objects.all().order_by('-pickup_date', '-release_date')
     selected_location_id = request.GET.get("location")
+    selected_status = request.GET.get("status")
     allResecues = scoped_rescues_for_user(request.user).order_by('-id')
     if request.user.is_superuser and selected_location_id:
         allResecues = allResecues.filter(location_id=selected_location_id)
+    if selected_status == "open":
+        allResecues = allResecues.filter(release_status__isnull=True)
+    elif selected_status == "released":
+        allResecues = allResecues.filter(release_status__isnull=False)
     locations = RescueLocation.objects.filter(is_active=True).order_by("name")
+
+    if request.GET.get("export") == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="animal_rescue_report.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            "Case ID",
+            "Location",
+            "Animal",
+            "Pickup Date",
+            "Pickup Landmark",
+            "Pickup Status",
+            "Release Date",
+            "Release Landmark",
+            "Release Status",
+            "Distance Variance",
+            "AI Risk",
+            "AI Review",
+        ])
+        for rescue in allResecues:
+            writer.writerow([
+                rescue.id,
+                rescue.location.name if rescue.location else "Unassigned",
+                rescue.animal,
+                rescue.pickup_date,
+                rescue.pickup_landmark,
+                rescue.pickup_status,
+                rescue.release_date or "",
+                rescue.release_landmark or "",
+                rescue.release_status or "Release pending",
+                rescue.distance_variance or "",
+                rescue.ai_risk_level or "",
+                rescue.ai_release_review or rescue.ai_pickup_review or "",
+            ])
+        return response
+
     context = {
         "allResecues": allResecues,
         "logourl":settings.logoUrl,
         "logofavicon":settings.logoFaviconUrl,
         "locations": locations,
         "selected_location_id": selected_location_id,
+        "selected_status": selected_status,
         "location": get_user_location(request.user),
         "can_view_operations": can_view_operations(request.user),
         "total_count": allResecues.count(),
@@ -231,6 +267,40 @@ def report(request):
             if removeObj:
                 removeObj.delete()
             return redirect("/report")
+
+        if 'generateAiReviewButton' in request.POST:
+            slno = request.POST.get("recordID")
+            rescue = scoped_rescues_for_user(request.user).filter(id=slno).first()
+            if rescue is None:
+                messages.info(request, "No rescue record was found for AI review.")
+                return redirect("/report")
+
+            pickup_review, pickup_risk = generate_demo_ai_review(
+                rescue.animal,
+                rescue.pickup_status,
+                rescue.pickup_landmark,
+                "pickup",
+            )
+            rescue.ai_pickup_review = pickup_review
+            rescue.ai_risk_level = pickup_risk
+
+            if rescue.release_status:
+                release_review, release_risk = generate_demo_ai_review(
+                    rescue.animal,
+                    rescue.release_status,
+                    rescue.release_landmark,
+                    "release",
+                )
+                rescue.ai_release_review = release_review
+                rescue.ai_risk_level = release_risk
+
+            rescue.save()
+            messages.success(request, f"AI review generated successfully for case #{rescue.id}.")
+            redirect_url = "/report"
+            selected_location_id = request.GET.get("location")
+            if selected_location_id:
+                redirect_url = f"/report?location={selected_location_id}"
+            return redirect(redirect_url)
 
     return render(request, 'report.html', context)
 
@@ -264,7 +334,12 @@ def admin(request):
             animalName = request.POST.get("AnimalNameUplode")
             animalPicture = request.FILES.get('AnimalPictureUplode')
 
-            animalPictureUrl = DEMO_PLACEHOLDER_IMAGE
+            try:
+                animalPictureUrl = uploadResourcesToCloudflareR2("animalPics", animalPicture) if animalPicture else DEMO_PLACEHOLDER_IMAGE
+                print("animalPictureUrl",animalPictureUrl)
+            except Exception as exc:
+                messages.info(request, f"Image upload failed: {exc}")
+                return redirect('/admin')
 
             newAnimal = Animal(
                 animal=animalName,

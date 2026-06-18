@@ -2,6 +2,7 @@ import random
 import string
 import requests
 import json
+import mimetypes
 from  AnimalResucueApp import settings
 import requests
 from io import BytesIO
@@ -17,6 +18,38 @@ def uploadResourcesToDigitalOcean(folderName, file):
     storage.save(image_path, file)
     fileUrl = "https://animalrescuesresources-space.blr1.digitaloceanspaces.com/resources/" + str(image_path)
     return fileUrl
+
+
+def uploadResourcesToCloudflareR2(folderName, file):
+    if not file:
+        return ""
+    if not settings.CLOUDFLARE_R2_ACCESS_KEY_ID or not settings.CLOUDFLARE_R2_SECRET_ACCESS_KEY:
+        raise ValueError("Cloudflare R2 credentials are not configured.")
+
+    import boto3
+    from botocore.client import Config
+
+    safe_name = str(file.name).replace("\\", "/").split("/")[-1]
+    object_key = f"{str(folderName).strip('/')}/{generate_random_alphanumeric(40)}_{safe_name}"
+    content_type = getattr(file, "content_type", None) or mimetypes.guess_type(safe_name)[0] or "application/octet-stream"
+
+    client = boto3.client(
+        "s3",
+        endpoint_url=settings.CLOUDFLARE_R2_ENDPOINT_URL,
+        aws_access_key_id=settings.CLOUDFLARE_R2_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+        region_name="auto",
+        config=Config(signature_version="s3v4"),
+    )
+    file.seek(0)
+    client.upload_fileobj(
+        file,
+        settings.CLOUDFLARE_R2_BUCKET_NAME,
+        object_key,
+        ExtraArgs={"ContentType": content_type},
+    )
+    public_base_url = settings.CLOUDFLARE_R2_PUBLIC_BASE_URL.rstrip("/")
+    return f"{public_base_url}/{object_key}"
 
 
 def generate_random_alphanumeric(length):

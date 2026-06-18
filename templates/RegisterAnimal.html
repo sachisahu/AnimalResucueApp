@@ -8,9 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .demo-dark body { background: #0f172a; color: #f8fafc; }
-        .demo-dark header, .demo-dark form, .demo-dark aside > div, .demo-dark section, .demo-dark .bg-white { background: #111827 !important; color: #f8fafc !important; }
+        .demo-dark header, .demo-dark form, .demo-dark section, .demo-dark .bg-white { background: #111827 !important; color: #f8fafc !important; }
         .demo-dark .bg-slate-50, .demo-dark .bg-slate-100, .demo-dark .bg-slate-200 { background: #1f2937 !important; color: #e5e7eb !important; }
         .demo-dark .text-slate-600, .demo-dark .text-slate-700, .demo-dark .text-slate-500 { color: #cbd5e1 !important; }
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
     </style>
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-950">
@@ -19,8 +21,8 @@
         <a href="/" class="flex items-center gap-3">
             <img src="{{ logourl }}" class="h-11 w-11 rounded-xl object-cover" alt="People For Animals">
             <div>
-                <p class="text-xs uppercase tracking-[0.2em] text-teal-700">Field intake</p>
-                <h1 class="font-bold">Register Animal Rescue</h1>
+                <p class="text-xs uppercase tracking-[0.2em] text-teal-700">Field rescue entry</p>
+                <h1 class="font-bold">Register Rescue</h1>
             </div>
         </a>
         <nav class="flex flex-wrap gap-2 text-sm">
@@ -36,189 +38,182 @@
     </div>
 </header>
 
-<main class="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[1fr_360px]">
+<main class="mx-auto max-w-4xl px-5 py-6">
     {% if messages %}
-        <div class="lg:col-span-2">
-            {% for message in messages %}
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm">{{ message }}</div>
-            {% endfor %}
-        </div>
+        {% for message in messages %}
+            <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800">{{ message }}</div>
+        {% endfor %}
     {% endif %}
-    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()" class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
+
+    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()" class="rounded-3xl bg-white p-5 shadow-xl shadow-slate-200 sm:p-8">
         {% csrf_token %}
-        <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
-            <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">New rescue case</p>
-                <h2 class="mt-2 text-3xl font-bold">Document rescue details</h2>
-                <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Capture the location, animal details, observed condition, and an AI-assisted triage note in a single workflow.</p>
-            </div>
-            <div class="rounded-2xl bg-slate-100 px-4 py-3 text-sm">
-                <span class="block text-slate-500">Assigned location</span>
-                <strong>{% if request.user.is_superuser %}Super admin{% elif location %}{{ location.name }}{% else %}Unassigned{% endif %}</strong>
-            </div>
+        <div class="mb-6">
+            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Simple step-by-step form</p>
+            <h2 class="mt-2 text-3xl font-bold">Add a Rescue Case</h2>
+            <p class="mt-2 text-base text-slate-600">Use the large buttons below. Fill one step, then press Next.</p>
+        </div>
+
+        <div class="mb-6 flex items-center gap-2">
+            <span id="dot1" class="h-3 flex-1 rounded-full bg-teal-500"></span>
+            <span id="dot2" class="h-3 flex-1 rounded-full bg-slate-200"></span>
+            <span id="dot3" class="h-3 flex-1 rounded-full bg-slate-200"></span>
+            <span id="dot4" class="h-3 flex-1 rounded-full bg-slate-200"></span>
         </div>
 
         {% if request.user.is_superuser %}
         <label class="mb-5 block">
-            <span class="text-sm font-semibold text-slate-700">Rescue location</span>
-            <select name="location" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500">
+            <span class="text-base font-bold text-slate-700">Rescue location</span>
+            <select name="location" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-lg outline-none focus:ring-2 focus:ring-teal-500">
                 {% for loc in locations %}
-                    <option value="{{ loc.id }}">{{ loc.name }}{% if loc.city %} · {{ loc.city }}{% endif %}</option>
+                    <option value="{{ loc.id }}">{{ loc.name }}{% if loc.city %} - {{ loc.city }}{% endif %}</option>
                 {% endfor %}
             </select>
         </label>
         {% endif %}
 
-        <div class="grid gap-5 md:grid-cols-2">
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Landmark or area</span>
-                <input type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" id="landmark" name="landmark" placeholder="Example: Jubilee Hills Main Road">
-            </label>
-            <div class="grid grid-cols-2 gap-3">
+        <section id="step1" class="step-panel active">
+            <h3 class="text-2xl font-bold">Step 1: Where did you find the animal?</h3>
+            <p class="mt-2 text-slate-600">Press the button to capture location. You can type the landmark in simple words.</p>
+            <div class="mt-6 grid gap-4">
+                <button type="button" class="rounded-3xl bg-teal-500 px-6 py-5 text-xl font-bold text-slate-950" onclick="getLocation()">📍 Capture My Location</button>
                 <label class="block">
-                    <span class="text-sm font-semibold text-slate-700">Latitude</span>
-                    <input type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" id="latitude" name="latitude" required>
+                    <span class="text-base font-bold text-slate-700">Nearby place or landmark</span>
+                    <input type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-lg outline-none focus:ring-2 focus:ring-teal-500" id="landmark" name="landmark" placeholder="Example: near bus stop, temple, market" required>
                 </label>
-                <label class="block">
-                    <span class="text-sm font-semibold text-slate-700">Longitude</span>
-                    <input type="text" class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-teal-500" id="longitude" name="longitude" required>
-                </label>
-            </div>
-        </div>
-
-        <button type="button" class="mt-4 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white" onclick="getLocation()">Capture Current Location</button>
-
-        <section class="mt-8 grid gap-6 lg:grid-cols-[320px_1fr]">
-            <div>
-                <p class="mb-2 text-sm font-semibold text-slate-700">Animal image evidence</p>
-                <div class="overflow-hidden rounded-3xl border border-dashed border-slate-300 bg-slate-50">
-                    <canvas id="previewImageCanvas" class="h-72 w-full bg-slate-200 object-cover"></canvas>
-                </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <button id="openCameraBtn" type="button" class="rounded-2xl bg-teal-500 px-4 py-2 text-sm font-bold text-slate-950">Use Camera</button>
-                    <label class="cursor-pointer rounded-2xl border border-slate-300 px-4 py-2 text-sm font-bold">
-                        Upload Image
-                        <input type="file" id="fileInputImage" name="fileInputImage" accept="image/*" capture="environment" class="hidden" onchange="previewUploadedImage(event)">
-                    </label>
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <div>
-                    <p class="mb-3 text-sm font-semibold text-slate-700">Animal type</p>
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                        {% for animal in animals %}
-                        <label class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-3 transition has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
-                            <input class="sr-only" type="radio" name="animalType" value="{{ animal.animal }}" required onchange="updateAiPreview()">
-                            {% if animal.pic_url %}
-                                <img src="{{ animal.pic_url }}" class="h-20 w-full rounded-xl object-cover" alt="{{ animal.animal }}">
-                            {% else %}
-                                <span class="flex h-20 w-full items-center justify-center rounded-xl bg-slate-200 text-xs font-bold uppercase tracking-[0.15em] text-slate-500">No image available</span>
-                            {% endif %}
-                            <span class="mt-2 block text-sm font-bold">{{ animal.animal }}</span>
-                        </label>
-                        {% endfor %}
-                        <label class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 p-3 transition has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
-                            <input class="sr-only" type="radio" name="animalType" value="others" onchange="toggleOtherAnimal(); updateAiPreview()">
-                            <span class="flex h-20 items-center justify-center rounded-xl bg-slate-200 text-sm font-bold">Other Animal</span>
-                            <input type="text" class="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" name="otherInput" id="otherInput" placeholder="Enter animal type">
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <p class="mb-3 text-sm font-semibold text-slate-700">Observed condition at pickup</p>
-                    <div class="grid gap-3 sm:grid-cols-3">
-                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
-                            <input class="sr-only" type="radio" name="status" value="Normal" required onchange="updateAiPreview()">
-                            <span class="block text-lg font-bold">Normal</span>
-                            <span class="text-xs text-slate-500">Appears stable</span>
-                        </label>
-                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
-                            <input class="sr-only" type="radio" name="status" value="Sick" required onchange="updateAiPreview()">
-                            <span class="block text-lg font-bold">Sick</span>
-                            <span class="text-xs text-slate-500">Requires care</span>
-                        </label>
-                        <label class="cursor-pointer rounded-2xl border border-slate-200 p-4 text-center has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
-                            <input class="sr-only" type="radio" name="status" value="Critical" required onchange="updateAiPreview()">
-                            <span class="block text-lg font-bold">Critical</span>
-                            <span class="text-xs text-slate-500">Urgent attention</span>
-                        </label>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4" id="latitude" name="latitude" placeholder="Latitude" required>
+                    <input type="text" class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4" id="longitude" name="longitude" placeholder="Longitude" required>
                 </div>
             </div>
         </section>
 
-        <div class="mt-8 flex flex-wrap justify-end gap-3">
-            <a href="/" class="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-bold">Cancel</a>
-            <button type="submit" name="saveButton" class="rounded-2xl bg-teal-500 px-6 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/20">Save Rescue Case</button>
+        <section id="step2" class="step-panel">
+            <h3 class="text-2xl font-bold">Step 2: Add animal photo</h3>
+            <p class="mt-2 text-slate-600">Please take or upload one clear photo before continuing.</p>
+            <div class="mt-6 overflow-hidden rounded-3xl border border-dashed border-slate-300 bg-slate-50">
+                <canvas id="previewImageCanvas" class="h-72 w-full bg-slate-200 object-cover"></canvas>
+            </div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                <button id="openCameraBtn" type="button" class="rounded-3xl bg-slate-950 px-6 py-5 text-xl font-bold text-white">📷 Take Photo</button>
+                <label class="cursor-pointer rounded-3xl border border-slate-300 px-6 py-5 text-center text-xl font-bold">
+                    🖼 Upload Photo
+                    <input type="file" id="fileInputImage" name="fileInputImage" accept="image/*" capture="environment" class="hidden" onchange="previewUploadedImage(event)" required>
+                </label>
+            </div>
+        </section>
+
+        <section id="step3" class="step-panel">
+            <h3 class="text-2xl font-bold">Step 3: Select the animal type</h3>
+            <p class="mt-2 text-slate-600">Tap the option that best matches the rescued animal.</p>
+            <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {% for animal in animals %}
+                <label class="cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 p-4 text-center transition has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
+                    <input class="sr-only" type="radio" name="animalType" value="{{ animal.animal }}" required>
+                    <span class="block text-5xl">🐾</span>
+                    <span class="mt-3 block text-xl font-bold">{{ animal.animal }}</span>
+                </label>
+                {% endfor %}
+                <label class="cursor-pointer rounded-3xl border border-slate-200 bg-slate-50 p-4 text-center transition has-[:checked]:border-teal-500 has-[:checked]:bg-teal-50">
+                    <input class="sr-only" type="radio" name="animalType" value="others" onchange="document.getElementById('otherInput').focus()">
+                    <span class="block text-5xl">❓</span>
+                    <span class="mt-3 block text-xl font-bold">Other</span>
+                    <input type="text" class="mt-3 w-full rounded-2xl border border-slate-200 px-3 py-3 text-base" name="otherInput" id="otherInput" placeholder="Type animal name">
+                </label>
+            </div>
+        </section>
+
+        <section id="step4" class="step-panel">
+            <h3 class="text-2xl font-bold">Step 4: Select the observed condition</h3>
+            <p class="mt-2 text-slate-600">Choose the condition that best describes the animal.</p>
+            <div class="mt-6 grid gap-3 sm:grid-cols-3">
+                <label class="cursor-pointer rounded-3xl border border-slate-200 p-6 text-center has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+                    <input class="sr-only" type="radio" name="status" value="Normal" required>
+                    <span class="block text-6xl">🙂</span>
+                    <span class="mt-3 block text-2xl font-bold">Stable</span>
+                </label>
+                <label class="cursor-pointer rounded-3xl border border-slate-200 p-6 text-center has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50">
+                    <input class="sr-only" type="radio" name="status" value="Sick" required>
+                    <span class="block text-6xl">😟</span>
+                    <span class="mt-3 block text-2xl font-bold">Needs Care</span>
+                </label>
+                <label class="cursor-pointer rounded-3xl border border-slate-200 p-6 text-center has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
+                    <input class="sr-only" type="radio" name="status" value="Critical" required>
+                    <span class="block text-6xl">🚨</span>
+                    <span class="mt-3 block text-2xl font-bold">Critical</span>
+                </label>
+            </div>
+        </section>
+
+        <div class="mt-8 flex flex-wrap justify-between gap-3">
+            <button type="button" id="backBtn" class="hidden rounded-2xl border border-slate-300 px-6 py-4 text-lg font-bold" onclick="changeStep(-1)">Back</button>
+            <a href="/" class="rounded-2xl border border-slate-300 px-6 py-4 text-lg font-bold">Cancel</a>
+            <button type="button" id="nextBtn" class="ml-auto rounded-2xl bg-teal-500 px-8 py-4 text-lg font-bold text-slate-950" onclick="changeStep(1)">Next</button>
+            <button type="submit" id="saveBtn" name="saveButton" class="hidden rounded-2xl bg-emerald-500 px-8 py-4 text-lg font-bold text-slate-950">Save Rescue</button>
         </div>
     </form>
-
-    <aside class="space-y-5">
-        <div class="rounded-3xl border border-teal-200 bg-white p-6 text-slate-950 shadow-xl shadow-teal-100">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">AI-assisted animal review</p>
-            <h3 class="mt-3 text-2xl font-bold">AI review based on image context, condition, and location</h3>
-            <p class="mt-3 rounded-2xl bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-900">For this demonstration, the system generates a realistic review note from the case details and stores it with the rescue record.</p>
-            <p id="aiPreview" class="mt-4 text-sm leading-6 text-slate-700">Select an animal type and condition to generate an AI-assisted case observation. Image upload is optional for this demonstration.</p>
-            <div class="mt-5 rounded-2xl bg-white/10 p-4">
-                <p class="text-xs uppercase tracking-[0.2em] text-slate-500">AI risk assessment</p>
-                <p id="riskPreview" class="mt-2 text-2xl font-bold text-teal-700">Pending</p>
-            </div>
-        </div>
-        <div class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200">
-            <h3 class="text-lg font-bold">Implementation note</h3>
-            <p class="mt-2 text-sm leading-6 text-slate-600">This version simulates AI vision output for presentation purposes. The same workflow can later be connected to a real image-analysis model.</p>
-        </div>
-    </aside>
 </main>
 
 <div id="cameraModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/90 p-4">
     <div class="w-full max-w-3xl rounded-3xl bg-white p-4">
         <video id="videoCam" playsinline autoplay class="h-[60vh] w-full rounded-2xl bg-slate-900 object-cover"></video>
         <div class="mt-4 flex justify-center gap-3">
-            <button type="button" class="rounded-2xl bg-teal-500 px-5 py-3 font-bold text-slate-950" id="captureButton">Capture</button>
-            <button type="button" class="rounded-2xl border border-slate-300 px-5 py-3 font-bold" onclick="turnoffCamera()">Close</button>
+            <button type="button" class="rounded-2xl bg-teal-500 px-6 py-4 text-lg font-bold text-slate-950" id="captureButton">Capture Photo</button>
+            <button type="button" class="rounded-2xl border border-slate-300 px-6 py-4 text-lg font-bold" onclick="turnoffCamera()">Close</button>
         </div>
     </div>
 </div>
 
 <script>
+let currentStep = 1;
+let stream;
 const videoCam = document.getElementById("videoCam");
 const previewImageCanvas = document.getElementById("previewImageCanvas");
 const captureButton = document.getElementById("captureButton");
 const fileInput = document.getElementById("fileInputImage");
-let stream;
 
-function selectedValue(name) {
-    const selected = document.querySelector(`input[name="${name}"]:checked`);
-    return selected ? selected.value : "";
+function showStep() {
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById(`step${i}`).classList.toggle("active", i === currentStep);
+        document.getElementById(`dot${i}`).className = `h-3 flex-1 rounded-full ${i <= currentStep ? "bg-teal-500" : "bg-slate-200"}`;
+    }
+    document.getElementById("backBtn").classList.toggle("hidden", currentStep === 1);
+    document.getElementById("nextBtn").classList.toggle("hidden", currentStep === 4);
+    document.getElementById("saveBtn").classList.toggle("hidden", currentStep !== 4);
 }
 
-function updateAiPreview() {
-    let animal = selectedValue("animalType");
-    if (animal === "others") animal = document.getElementById("otherInput").value || "animal";
-    const status = selectedValue("status");
-    const landmark = document.getElementById("landmark").value;
-    const risk = status === "Critical" ? "High" : status === "Sick" ? "Medium" : status === "Normal" ? "Low" : "Pending";
-    const color = animal.toLowerCase().includes("dog") ? "brown and white" : animal.toLowerCase().includes("cat") ? "grey and white" : "light brown";
-    document.getElementById("riskPreview").textContent = risk;
-    document.getElementById("aiPreview").textContent = animal && status
-        ? `AI visual review: the ${animal} appears ${color}${landmark ? " near " + landmark : ""}. ${status === "Critical" ? "Visible distress indicators suggest possible injury, shock, or severe weakness. Recommendation: urgent medical triage and priority transport." : status === "Sick" ? "The animal may be sick or dehydrated, with possible reduced mobility. Recommendation: veterinary observation, hydration check, and wound assessment." : "The animal appears relatively stable, but the surroundings and visible injuries should be verified by admin."}`
-        : "Select animal and condition to generate an AI-style review comment for the case.";
+function changeStep(direction) {
+    if (direction > 0 && !validateCurrentStep()) return;
+    currentStep = Math.min(4, Math.max(1, currentStep + direction));
+    showStep();
 }
 
-function applySavedTheme() {
-    const dark = localStorage.getItem("pfa-theme") === "dark";
-    document.documentElement.classList.toggle("demo-dark", dark);
-    const btn = document.getElementById("themeToggle");
-    if (btn) btn.textContent = dark ? "Light Mode" : "Dark Mode";
-}
-
-function toggleTheme() {
-    const dark = !document.documentElement.classList.contains("demo-dark");
-    localStorage.setItem("pfa-theme", dark ? "dark" : "light");
-    applySavedTheme();
+function validateCurrentStep() {
+    if (currentStep === 1) {
+        if (!document.getElementById("landmark").value.trim()) {
+            alert("Please enter the nearby place or landmark.");
+            return false;
+        }
+        if (!document.getElementById("latitude").value.trim() || !document.getElementById("longitude").value.trim()) {
+            alert("Please capture the rescue location before continuing.");
+            return false;
+        }
+    }
+    if (currentStep === 2 && !fileInput.files.length) {
+        alert("Please take or upload an animal photo before continuing.");
+        return false;
+    }
+    if (currentStep === 3) {
+        const animal = document.querySelector('input[name="animalType"]:checked');
+        if (!animal) {
+            alert("Please choose the animal type before continuing.");
+            return false;
+        }
+        if (animal.value === "others" && !document.getElementById("otherInput").value.trim()) {
+            alert("Please type the animal name.");
+            return false;
+        }
+    }
+    return true;
 }
 
 function getLocation() {
@@ -226,6 +221,7 @@ function getLocation() {
     navigator.geolocation.getCurrentPosition(function(position) {
         document.getElementById("latitude").value = position.coords.latitude;
         document.getElementById("longitude").value = position.coords.longitude;
+        alert("Location captured successfully.");
     }, function() {
         alert("Unable to capture the current location. Please allow location access or enter latitude and longitude manually.");
     });
@@ -273,16 +269,52 @@ function turnoffCamera() {
     if (stream && stream.getTracks) stream.getTracks().forEach(track => track.stop());
 }
 
-function toggleOtherAnimal() {
-    document.getElementById("otherInput").focus();
-}
-
 function validateForm() {
-    if (!selectedValue("animalType") || !selectedValue("status")) {
-        alert("Please select the animal type and observed condition before saving.");
+    const animal = document.querySelector('input[name="animalType"]:checked');
+    const status = document.querySelector('input[name="status"]:checked');
+    if (!document.getElementById("landmark").value.trim() || !document.getElementById("latitude").value.trim() || !document.getElementById("longitude").value.trim()) {
+        alert("Please complete the location step before saving.");
+        currentStep = 1;
+        showStep();
+        return false;
+    }
+    if (!fileInput.files.length) {
+        alert("Please take or upload an animal photo before saving.");
+        currentStep = 2;
+        showStep();
+        return false;
+    }
+    if (!animal) {
+        alert("Please choose the animal type before saving.");
+        currentStep = 3;
+        showStep();
+        return false;
+    }
+    if (animal.value === "others" && !document.getElementById("otherInput").value.trim()) {
+        alert("Please type the animal name before saving.");
+        currentStep = 3;
+        showStep();
+        return false;
+    }
+    if (!status) {
+        alert("Please choose the animal condition before saving.");
+        currentStep = 4;
+        showStep();
         return false;
     }
     return true;
+}
+
+function applySavedTheme() {
+    const dark = localStorage.getItem("pfa-theme") === "dark";
+    document.documentElement.classList.toggle("demo-dark", dark);
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = dark ? "Light Mode" : "Dark Mode";
+}
+function toggleTheme() {
+    const dark = !document.documentElement.classList.contains("demo-dark");
+    localStorage.setItem("pfa-theme", dark ? "dark" : "light");
+    applySavedTheme();
 }
 
 getLocation();
