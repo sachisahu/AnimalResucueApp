@@ -22,3 +22,4 @@ django-crispy-forms==2.0
 requests-toolbelt==0.10.1
 boto3
 django-storages
+psycopg2-binary
